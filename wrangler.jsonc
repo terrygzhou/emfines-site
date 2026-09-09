@@ -5,8 +5,6 @@
   "main": "worker.js",
   "assets": {
     "directory": "./public",
-    "binding": "ASSETS",
-    "binding_prefix": "ASSETS",
-    "not_found_handling": "single-page-app"
+    "binding": "ASSETS"
   }
 }
