@@ -79,9 +79,38 @@ const ctaHref = active === '/design' ? '#design-enquiry' : '/design';
 <script>
   const btn = document.querySelector('[data-menu-toggle]') as HTMLButtonElement | null;
   const menu = document.getElementById('mobile-menu') as HTMLElement | null;
+
+  const closeMenu = () => {
+    menu?.classList.add('hidden');
+    btn?.setAttribute('aria-expanded', 'false');
+  };
+
   btn?.addEventListener('click', () => {
     if (!menu) return;
     const open = menu.classList.toggle('hidden');
     btn.setAttribute('aria-expanded', String(!open));
+  });
+
+  // Any in-page anchor in the mobile menu (the on-/design "Start a Design"
+  // CTA): dismiss the menu and move focus to the scroll target so keyboard
+  // and screen-reader users keep their place (WCAG 2.4.3 / 2.4.6).
+  menu?.querySelectorAll('a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', () => {
+      closeMenu();
+      document.querySelector<HTMLElement>(a.getAttribute('href') ?? '')?.focus({ preventScroll: true });
+    });
+  });
+
+  // Direct load with the hash already present (e.g. /design#design-enquiry).
+  if (window.location.hash === '#design-enquiry') {
+    document.getElementById('design-enquiry')?.focus({ preventScroll: true });
+  }
+
+  // Escape dismisses the open menu and returns focus to the toggle (WCAG 2.1.2).
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu && !menu.classList.contains('hidden')) {
+      closeMenu();
+      btn?.focus();
+    }
   });
 </script>
