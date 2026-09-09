@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EM Fine Studio — Australian Jewellery Design Studio</title>
+<meta name="description" content="Australian jewellery design studio with 20+ years of experience. Custom jewellery design, repairs, and crafted solid gold and sterling silver pieces.">
+<meta property="og:title" content="EM Fine Studio — Australian Jewellery Design">
+<meta property="og:description" content="Custom jewellery design, repairs and crafted pieces. 20+ years of Australian craft.">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💍</text></svg>">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="#top">EM <span>Fine Studio</span></a>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="#services">Services</a>
+      <a href="#work">Our Work</a>
+      <a href="#story">Our Story</a>
+      <a href="#contact" class="nav-cta">Start a Design</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top">
+    <div class="container">
+      <p class="eyebrow">Australian jewellery design studio</p>
+      <h1>One-of-a-kind jewellery, <em>designed around your story.</em></h1>
+      <p class="lede">EM Fine Studio creates custom gold and silver pieces for the moments that matter — engagements, anniversaries, family keepsakes — and brings treasured heirlooms back to life through careful repair. Two decades of Australian craft, in every piece.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#custom-design">Design a piece</a>
+        <a class="btn btn-ghost" href="#repairs">Book a repair</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="container">
+      <div class="stat"><span>20+</span><small>years of Australian craft</small></div>
+      <div class="stat"><span>100%</span><small>made to your story</small></div>
+      <div class="stat"><span>Gold &amp; silver</span><small>solid, in every piece</small></div>
+    </div>
+  </section>
+
+  <section class="section" id="services">
+    <div class="container">
+      <h2>What we make</h2>
+      <p class="section-intro">Every piece is designed or repaired in our own studio — no castings, no outsourced work.</p>
+      <div class="cards">
+        <article class="card" id="custom-design">
+          <h3>Custom jewellery design</h3>
+          <p>Engagement rings, one-of-a-kind pendants, earrings, and statement pieces — designed around your story, your people, your style. Solid gold and sterling silver only. Share photos, a rough brief, and your budget, and we'll sketch a direction within a few days.</p>
+          <a class="card-link" href="#contact">Start a design &rarr;</a>
+        </article>
+        <article class="card" id="repairs">
+          <h3>Jewellery repairs</h3>
+          <p>Broken chains, lost prongs, rings too tight after the holidays, stones that have gone loose — we repair what you already love, carefully and honestly. A free assessment first, and you always know the cost before we start.</p>
+          <a class="card-link" href="#contact">Ask about a repair &rarr;</a>
+        </article>
+        <article class="card" id="crafted">
+          <h3>Crafted pieces &amp; components</h3>
+          <p>Quality solid gold and sterling silver, finished in-house — from everyday rings to the components that make your custom piece possible. If it carries our stamp, we made it here.</p>
+          <a class="card-link" href="#work">See the work &rarr;</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="work">
+    <div class="container">
+      <h2>Our work</h2>
+      <p class="section-intro">Studio photos land here. In the meantime, these are the kinds of pieces we make every week.</p>
+      <div class="gallery">
+        <figure><div class="ph ph-gold"></div><figcaption>Aurora — 18k gold solitaire, one-of-a-kind</figcaption></figure>
+        <figure><div class="ph ph-silver"></div><figcaption>Heritage — sterling silver pendant, remade from a family brooch</figcaption></figure>
+        <figure><div class="ph ph-mixed"></div><figcaption>Coastal — gold band with hand-set stones, Melbourne</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="story">
+    <div class="container">
+      <h2>Our story</h2>
+      <p class="section-intro">Two decades, one studio, and a simple standard.</p>
+      <p class="prose">EM Fine Studio began with a workbench and a belief: jewellery should be made for the person wearing it, not for a shelf. Over more than 20 years we've designed, built, and repaired thousands of pieces for families across Australia — and every one of them still carries our stamp.</p>
+      <p class="prose">We work in solid gold and sterling silver only. We don't outsource, and we don't cast generic stock. When you commission a piece, you're commissioning us — and we treat your story the way we'd treat our own.</p>
+    </div>
+  </section>
+
+  <section class="section cta" id="contact">
+    <div class="container">
+      <h2>Start a commission</h2>
+      <p class="section-intro">Tell us about the piece — a photo, a rough brief, and a budget is enough to get moving. We'll reply within two business days.</p>
+      <form id="enquiry-form" action="https://api.emfine.dev/v1/enquiries" method="post" novalidate>
+        <div class="grid-2">
+          <label>Full name<input type="text" name="name" required autocomplete="name" placeholder="Your name"></label>
+          <label>Email<input type="email" name="email" required autocomplete="email" placeholder="you@example.com"></label>
+        </div>
+        <label>What are you looking for?
+          <select name="interest" required>
+            <option value="" selected disabled>Choose one…</option>
+            <option value="custom-design">A custom design</option>
+            <option value="repair">A repair or assessment</option>
+            <option value="component">A crafted piece or component</option>
+          </select>
+        </label>
+        <label>Budget guide
+          <select name="budget">
+            <option value="" selected disabled>Choose a range…</option>
+            <option>Under $500</option>
+            <option>$500–$1,500</option>
+            <option>$1,500–$5,000</option>
+            <option>$5,000+</option>
+          </select>
+        </label>
+        <label>Tell us about the piece<textarea name="brief" rows="4" placeholder="Who's it for, what's the occasion, any photos you can share?"></textarea></label>
+        <label class="check"><input type="checkbox" name="photos" id="photos"> I'll share photos with you (attach in your reply)</label>
+        <div class="form-status" id="form-status" role="status" aria-live="polite"></div>
+        <button type="submit" class="btn btn-primary">Send the brief</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p><strong>EM Fine Studio</strong> — Australian jewellery, made to order.</p>
+    <p class="small">Custom design · Repairs · Solid gold &amp; sterling silver &nbsp;·&nbsp; <a href="#contact">Start a commission</a></p>
+  </div>
+</footer>
+
+<script src="/js/enquiry.js" defer></script>
+</body>
+</html>

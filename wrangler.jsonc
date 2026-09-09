@@ -1,0 +1,12 @@
+{
+  "name": "emfines-site",
+  "compatibility_date": "2026-07-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "worker.js",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "binding_prefix": "ASSETS",
+    "not_found_handling": "single-page-app"
+  }
+}
