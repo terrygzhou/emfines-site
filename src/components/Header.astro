@@ -17,6 +17,10 @@ const links = [
 // Render the studio logo only when the file is actually on disk (add-header-logo;
 // constitution V — never ship a broken <img>). Wordmark supplies the a11y name.
 const showLogo = uiAssets.includes('logo.png');
+
+// CTA: elsewhere it navigates to /design; on /design itself it jumps to
+// the embedded enquiry form instead of re-linking to the current page.
+const ctaHref = active === '/design' ? '#design-enquiry' : '/design';
 ---
 <a class="sr-only" href="#main">Skip to content</a>
 <div class="bg-accent text-white text-center text-[12.5px] tracking-[0.06em] px-4 py-2">
@@ -49,7 +53,7 @@ const showLogo = uiAssets.includes('logo.png');
           {l.label}
         </a>
       ))}
-      <a href="/design" class="bg-accent text-white px-5 py-2 text-sm font-semibold hover:bg-ink transition-colors">
+      <a href={ctaHref} class="bg-accent text-white px-5 py-2 text-sm font-semibold hover:bg-ink transition-colors">
         Start a Design
       </a>
     </nav>
@@ -67,7 +71,7 @@ const showLogo = uiAssets.includes('logo.png');
         {l.label}
       </a>
     ))}
-    <a href="/design" class="mt-3 bg-accent text-white px-5 py-2.5 text-sm font-semibold text-center">
+    <a href={ctaHref} class="mt-3 bg-accent text-white px-5 py-2.5 text-sm font-semibold text-center">
       Start a Design
     </a>
   </nav>
