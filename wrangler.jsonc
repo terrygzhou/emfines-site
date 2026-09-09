@@ -2,6 +2,15 @@
   "name": "emfines-site",
   "compatibility_date": "2026-07-17",
   "compatibility_flags": ["nodejs_compat"],
+  // Keep the stable workers.dev subdomain + preview URLs (constitution: stable prod URL)
+  "workers_dev": true,
+  "preview_urls": true,
+  // Custom domain (emfinestudio.com) — Cloudflare auto-configures zone DNS on deploy
+  "routes": [
+    { "pattern": "emfinestudio.com/*", "zone_name": "emfinestudio.com" },
+    { "pattern": "www.emfinestudio.com/*", "zone_name": "emfinestudio.com" }
+  ],
+
   // Durable enquiry archive (30-day TTL set per key at write time)
   "kv_namespaces": [
     { "binding": "emfines_enquiries", "id": "2ea2e299d3c144a1bc6f18ac01687611" },
