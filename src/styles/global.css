@@ -19,8 +19,12 @@
   --font-body: "Helvetica Neue", Arial, sans-serif;
 }
 
-html {
-  scroll-behavior: smooth;
+/* Smooth in-page scrolling only for users who haven't asked for reduced
+   motion (WCAG 2.3.3); anchor jumps (e.g. the /design CTA) still scroll. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
