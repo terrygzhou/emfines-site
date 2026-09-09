@@ -1,0 +1,83 @@
+---
+import { uiAssets } from '@/generated/assets-manifest';
+
+interface Props {
+  active?: string;
+}
+const { active } = Astro.props;
+
+const links = [
+  { href: '/design', label: 'Design' },
+  { href: '/repairs', label: 'Repairs' },
+  { href: '/pieces', label: 'Pieces' },
+  { href: '/gallery', label: 'Gallery' },
+  { href: '/contact', label: 'Contact' },
+];
+
+// Render the studio logo only when the file is actually on disk (add-header-logo;
+// constitution V — never ship a broken <img>). Wordmark supplies the a11y name.
+const showLogo = uiAssets.includes('logo.png');
+---
+<a class="sr-only" href="#main">Skip to content</a>
+<div class="bg-accent text-white text-center text-[12.5px] tracking-[0.06em] px-4 py-2">
+  Australian design, crafted with experience and care
+</div>
+<header class="sticky top-0 z-50 bg-bg border-b border-line">
+  <div class="mx-auto max-w-[1240px] px-6 flex items-center gap-7 h-16">
+    <a href="/" class="flex items-center gap-2.5 font-display text-[21px] tracking-[0.02em]">
+      {showLogo && (
+        <img
+          src="/assets/logo.png"
+          alt=""
+          width="54"
+          height="54"
+          loading="eager"
+          class="h-[54px] w-[54px] shrink-0 object-contain"
+        />
+      )}
+      EM&nbsp;Fine&nbsp;Studio
+    </a>
+    <nav class="hidden md:flex gap-[22px] text-sm text-muted" aria-label="Main navigation">
+      {links.map((l) => (
+        <a
+          href={l.href}
+          class:list={[
+            'hover:text-ink transition-colors',
+            active === l.href && 'text-ink font-semibold',
+          ]}
+        >
+          {l.label}
+        </a>
+      ))}
+      <a href="/design" class="bg-accent text-white px-5 py-2 text-sm font-semibold hover:bg-ink transition-colors">
+        Start a Design
+      </a>
+    </nav>
+    <button
+      class="md:hidden text-2xl leading-none p-1"
+      data-menu-toggle
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="Toggle menu"
+    >☰</button>
+  </div>
+  <nav id="mobile-menu" class="md:hidden hidden flex-col gap-1 px-6 pb-4 text-sm" aria-label="Mobile navigation">
+    {links.map((l) => (
+      <a href={l.href} class="py-2 border-b border-line/60 text-muted hover:text-ink">
+        {l.label}
+      </a>
+    ))}
+    <a href="/design" class="mt-3 bg-accent text-white px-5 py-2.5 text-sm font-semibold text-center">
+      Start a Design
+    </a>
+  </nav>
+</header>
+<script>
+  const btn = document.querySelector('[data-menu-toggle]') as HTMLButtonElement | null;
+  const menu = document.getElementById('mobile-menu') as HTMLElement | null;
+  btn?.addEventListener('click', () => {
+    if (!menu) return;
+    const open = menu.classList.toggle('hidden');
+    btn.setAttribute('aria-expanded', String(!open));
+  });
+</script>

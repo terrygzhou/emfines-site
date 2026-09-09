@@ -1,0 +1,65 @@
+---
+
+import Base from '@/layouts/Base.astro';
+import EnquiryForm from '@/components/EnquiryForm.astro';
+---
+export const prerender = true;
+<Base title="Custom jewellery design — EM Fine Studio" active="/design"
+      description="From your idea (or your treasured heirloom) to a finished piece. Send your brief, photos and budget — takes five minutes.">
+  <section class="py-14">
+    <div class="mx-auto max-w-[720px] px-6">
+      <p class="text-xs tracking-[0.22em] uppercase text-accent mb-3">Custom Design</p>
+      <h1 class="text-[34px] lg:text-[46px]">Custom jewellery design</h1>
+      <p class="mt-4 text-muted max-w-[52ch]">
+        From your idea (or your treasured heirloom) to a finished piece.
+      </p>
+    </div>
+  </section>
+
+  <section class="pb-14">
+    <div class="mx-auto max-w-[720px] px-6">
+      <h2 class="text-[26px] mb-6">How it works</h2>
+      <ol class="flex flex-col gap-5">
+        <li class="flex gap-4">
+          <span class="font-display text-accent text-2xl">1</span>
+          <span class="text-[15px]">Send your brief, photos and budget — takes five minutes.</span>
+        </li>
+        <li class="flex gap-4">
+          <span class="font-display text-accent text-2xl">2</span>
+          <span class="text-[15px]">We design: sketches, materials and stone options for your approval.</span>
+        </li>
+        <li class="flex gap-4">
+          <span class="font-display text-accent text-2xl">3</span>
+          <span class="text-[15px]">You approve before anything is made.</span>
+        </li>
+        <li class="flex gap-4">
+          <span class="font-display text-accent text-2xl">4</span>
+          <span class="text-[15px]">Your piece is crafted, finished and delivered.</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="pb-14">
+    <div class="mx-auto max-w-[720px] px-6">
+      <h2 class="text-[26px] mb-5">What you can commission</h2>
+      <ul class="flex flex-wrap gap-2.5 text-sm">
+        {['Rings','Engagement rings','Pendants','Earrings','Bracelets','Heirloom redesigns','One-off pieces'].map((item) => (
+          <li class="border border-line px-4 py-2 text-muted">{item}</li>
+        ))}
+      </ul>
+      <h2 class="text-[26px] mt-10 mb-4">Materials</h2>
+      <p class="text-muted max-w-[52ch] text-[15px]">
+        We work in solid gold and 925 sterling silver. Gold is the one you choose — tell us what you have in
+        mind and we'll advise on the best solid option for your piece.
+      </p>
+    </div>
+  </section>
+
+  <section class="pb-16" id="start-yours">
+    <div class="mx-auto max-w-[720px] px-6">
+      <h2 class="text-[26px] mb-6">Start yours</h2>
+      <EnquiryForm />
+    </div>
+  </section>
+</Base>

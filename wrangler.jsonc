@@ -2,9 +2,11 @@
   "name": "emfines-site",
   "compatibility_date": "2026-07-17",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "worker.js",
-  "assets": {
-    "directory": "./public",
-    "binding": "ASSETS"
-  }
+  // Durable enquiry archive (30-day TTL set per key at write time)
+  "kv_namespaces": [
+    { "binding": "emfines_enquiries", "id": "2ea2e299d3c144a1bc6f18ac01687611" },
+  ],
+  // Email delivery via Cloudflare Email Service (free tier) — set as secrets:
+  //   wrangler secret put ENQUIRY_TO   <- studio inbox address
+  //   wrangler secret put ENQUIRY_FROM <- verified Email Service sender (optional)
 }

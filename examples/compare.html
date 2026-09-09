@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMF-11 — Design Direction Selection</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#faf9f7;--ink:#1c1b18;--muted:#6f6a61;--line:#e5e1da;--accent:#a68a5b;--card:#fff}
+body{font-family:"Helvetica Neue",Inter,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;line-height:1.2}
+a{color:var(--accent)}
+.container{max-width:1240px;margin:0 auto;padding:0 24px}
+/* top bar */
+.top{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .container{display:flex;align-items:center;gap:20px;height:56px}
+.top .mark{font-family:Georgia,serif;font-size:15px;letter-spacing:.12em;text-transform:uppercase}
+.tabs{display:flex;gap:6px;overflow-x:auto}
+.tabs a{font-size:13px;color:var(--muted);padding:6px 12px;border-radius:999px;white-space:nowrap;text-decoration:none}
+.tabs a.active{background:var(--ink);color:#fff}
+/* intro */
+.intro{padding:72px 0 48px;max-width:760px}
+.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.intro h1{font-size:clamp(30px,4vw,46px);margin-bottom:16px}
+.intro p{color:var(--muted);font-size:16px;margin-bottom:10px}
+/* overview cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;padding-bottom:48px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px;position:relative}
+.card.selected{border:2px solid var(--accent)}
+.card-top{display:flex;justify-content:space-between;align-items:center}
+.num{font-family:Georgia,serif;font-size:28px;color:var(--accent)}
+.swatches i{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid #00000014;margin-left:3px}
+.card h3{font-size:19px}
+.aesthetic{font-size:13.5px;color:var(--ink)}
+.inspired{font-size:12px;color:var(--muted)}
+.jump{margin-top:auto;font-size:13px;text-decoration:none;font-weight:600}
+/* option preview sections */
+.option{padding:56px 0;border-top:1px solid var(--line)}
+.opt-head{display:flex;align-items:baseline;justify-content:space-between;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.opt-num{font-family:Georgia,serif;font-size:15px;color:var(--accent);letter-spacing:.14em;margin-right:10px}
+.opt-head h2{display:inline;font-size:30px}
+.opt-sub{color:var(--muted);font-size:14px;max-width:520px}
+iframe{width:100%;height:82vh;min-height:620px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.opt-actions{display:flex;align-items:center;gap:16px;margin-top:18px;flex-wrap:wrap}
+.select-btn{cursor:pointer;border:none;background:var(--ink);color:#fff;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:600}
+.select-btn.selected{background:var(--accent)}
+.open{font-size:14px;font-weight:600}
+.hint{font-size:12.5px;color:var(--muted)}
+/* selection bar */
+#sel-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(140%);z-index:60;background:var(--ink);color:#fff;border-radius:999px;padding:10px 12px 10px 22px;display:flex;align-items:center;gap:14px;font-size:14px;box-shadow:0 12px 32px #00000030;transition:transform .3s ease;max-width:92vw}
+#sel-bar.show{transform:translateX(-50%) translateY(0)}
+#sel-bar button{cursor:pointer;border:none;background:#ffffff22;color:#fff;border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:600}
+footer{padding:56px 0 88px;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+@media(max-width:700px){.opt-head{flex-direction:column;align-items:flex-start}iframe{height:70vh;min-height:480px}}
+</style>
+</head>
+<body>
+<div class="top"><div class="container">
+  <span class="mark">EMF-11</span>
+  <nav class="tabs"><a href="#preview-opt-1" data-tab="01">01 · Classic Luxury</a><a href="#preview-opt-2" data-tab="02">02 · Editorial Soft</a><a href="#preview-opt-3" data-tab="03">03 · Dark Gemstone</a><a href="#preview-opt-4" data-tab="04">04 · Minimal Canvas</a><a href="#preview-opt-5" data-tab="05">05 · Avant-Garde Crystal</a><a href="#top" data-tab="">Overview</a></nav>
+</div></div>
+
+<div id="top" class="container">
+  <div class="intro">
+    <div class="eyebrow">Design research · Five directions</div>
+    <h1>Choose the direction for the new emfines site</h1>
+    <p>Five design explorations, each built from research across seven jewellery brands (Michael Hill, Tiffany &amp; Co., Pandora, Sarah &amp; Sebastian, by charlotte, EVRYJEWELS, Swarovski).</p>
+    <p>Each preview below is the full responsive sample — scroll inside any frame to explore it top to bottom. Select the direction that feels right, or mix-and-match in the conversation; a canonical theme will be built from the chosen direction.</p>
+  </div>
+
+  <div class="grid">
+<article class="card" id="opt-1" data-num="01">
+  <div class="card-top"><span class="num">01</span><span class="swatches"><i style="background:#ffffff" title="#ffffff"></i><i style="background:#0e1a2b" title="#0e1a2b"></i><i style="background:#1e4d8c" title="#1e4d8c"></i><i style="background:#5a6572" title="#5a6572"></i></span></div>
+  <h3>Option 1 — Classic Luxury</h3>
+  <p class="aesthetic">Heritage house-jewel: ivory canvas, deep-blue accent, serif display, quiet luxury</p>
+  <p class="inspired">Tiffany & Co. AU — Blue Book campaigns, “Icons” merchandising, gifting services</p>
+  <a class="jump" href="#opt-1">View preview ↓</a>
+</article>
+
+<article class="card" id="opt-2" data-num="02">
+  <div class="card-top"><span class="num">02</span><span class="swatches"><i style="background:#f6f2ee" title="#f6f2ee"></i><i style="background:#2e2c2a" title="#2e2c2a"></i><i style="background:#8a6d5c" title="#8a6d5c"></i><i style="background:#fbdfdf" title="#fbdfdf"></i></span></div>
+  <h3>Option 2 — Editorial Soft</h3>
+  <p class="aesthetic">Warm boutique: soft neutrals, story-driven keepsake framing, rounded imagery</p>
+  <p class="inspired">by charlotte (“Your Lotus Story”, Bridal Journey) · Sarah & Sebastian (warm grey canvas)</p>
+  <a class="jump" href="#opt-2">View preview ↓</a>
+</article>
+
+<article class="card" id="opt-3" data-num="03">
+  <div class="card-top"><span class="num">03</span><span class="swatches"><i style="background:#0d0d0f" title="#0d0d0f"></i><i style="background:#f5f2ec" title="#f5f2ec"></i><i style="background:#c8a24b" title="#c8a24b"></i><i style="background:#1c1b1f" title="#1c1b1f"></i></span></div>
+  <h3>Option 3 — Dark Gemstone</h3>
+  <p class="aesthetic">Gemstone-led dark mode: near-black canvas, gold accent, sale urgency + advisory content</p>
+  <p class="inspired">Michael Hill AU — #0d0d0f palette, “30% off selected”, advisor & finance blocks</p>
+  <a class="jump" href="#opt-3">View preview ↓</a>
+</article>
+
+<article class="card" id="opt-4" data-num="04">
+  <div class="card-top"><span class="num">04</span><span class="swatches"><i style="background:#ffffff" title="#ffffff"></i><i style="background:#111111" title="#111111"></i><i style="background:#e0489a" title="#e0489a"></i><i style="background:#ffd9ea" title="#ffd9ea"></i></span></div>
+  <h3>Option 4 — Minimal Canvas</h3>
+  <p class="aesthetic">Bright catalogue: white canvas, pink pops, pill buttons, promotional energy</p>
+  <p class="inspired">Pandora AU — sale-forward homepage, promo code banner, collabs, best-sellers</p>
+  <a class="jump" href="#opt-4">View preview ↓</a>
+</article>
+
+<article class="card" id="opt-5" data-num="05">
+  <div class="card-top"><span class="num">05</span><span class="swatches"><i style="background:#ffffff" title="#ffffff"></i><i style="background:#0a0a0a" title="#0a0a0a"></i><i style="background:#c1121f" title="#c1121f"></i><i style="background:#3a3a3a" title="#3a3a3a"></i></span></div>
+  <h3>Option 5 — Avant-Garde Crystal</h3>
+  <p class="aesthetic">Fashion-forward: monochrome + signature red, oversized uppercase type, full-bleed cinematic media</p>
+  <p class="inspired">Swarovski AU + EVRYJEWELS — campaign-driven, bold type, statement scale</p>
+  <a class="jump" href="#opt-5">View preview ↓</a>
+</article>
+  </div>
+</div>
+
+
+<section class="option" id="preview-opt-1">
+  <div class="opt-head">
+    <div><span class="opt-num">01</span><h2>Classic Luxury</h2></div>
+    <p class="opt-sub">Heritage house-jewel: ivory canvas, deep-blue accent, serif display, quiet luxury</p>
+  </div>
+  <iframe srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;title&gt;Option 1 — Classic Luxury (Tiffany-inspired) — EMF-11 Design Exploration&lt;/title&gt;
+&lt;style&gt;
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);font-weight:var(--w-display,600);line-height:1.15}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.container{max-width:1240px;margin:0 auto;padding:0 24px}
+img.ph{background:linear-gradient(135deg,var(--ph-a),var(--ph-b));border-radius:var(--radius,0px);display:flex;align-items:flex-end;padding:18px;color:var(--ph-label,#fff)}
+img.ph small{opacity:.75;font-size:12px;letter-spacing:.04em}
+button,.btn{cursor:pointer;border:1px solid transparent;font-family:var(--font-body)}
+/* Theme */
+:root{
+  --bg:#ffffff; --ink:#0e1a2b;
+  --accent:#1e4d8c; --accent-2:#ffffff;
+  --muted:#5a6572;
+  --card:#ffffff;
+  --font-display:&quot;Didot&quot;,&quot;Bodoni MT&quot;,&quot;Times New Roman&quot;,serif;
+  --font-body:&quot;Helvetica Neue&quot;,Arial,sans-serif;
+  --w-display:500;
+  --ph-a:#e9edf2; --ph-b:#c8d2dd;
+}
+/* Header */
+.announce{background:var(--accent);color:var(--on-accent,#fff);font-size:12.5px;text-align:center;padding:8px 16px;letter-spacing:.06em}
+header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid #e5e7ea;z-index:50}
+.nav{display:flex;align-items:center;gap:28px;height:64px}
+.brand{font-family:var(--font-display);font-size:21px;letter-spacing:var(--brand-tracks,.02em)}
+.nav ul{display:flex;gap:22px;list-style:none;font-size:14px;color:var(--muted)}
+.nav ul a:hover{color:var(--ink)}
+.iconset{margin-left:auto;display:flex;gap:16px;font-size:18px;color:var(--ink)}
+/* Hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:0;background:#f7f8fa}
+.hero-copy{padding:72px 48px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+.hero-copy .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.hero-copy h1{font-size:clamp(34px,4.4vw,58px)}
+.hero-copy p{max-width:52ch;color:var(--muted);font-size:16px}
+.hero-media{background:linear-gradient(160deg,var(--ph-a),var(--ph-b));display:flex;align-items:flex-end;padding:22px;color:#fff;font-size:13px;letter-spacing:.06em;min-height:480px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{padding:13px 26px;font-size:14px;font-weight:600;background:var(--accent);color:var(--on-accent,#fff)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+/* Sections */
+section{padding:64px 0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:26px}
+.sec-head h2{font-size:26px}
+.sec-head a{font-size:13px;color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
+.grid{display:grid;gap:18px}
+.grid.c4{grid-template-columns:repeat(4,1fr)}
+.grid.c3{grid-template-columns:repeat(3,1fr)}
+.grid.c2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--card);border:1px solid #e5e7ea;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.card .ph{height:210px}
+.card-body{padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.card-body h3{font-size:15px;font-weight:600;font-family:var(--font-body)}
+.card-body .sub{font-size:12.5px;color:var(--muted)}
+.card-body .price{font-size:14px;font-weight:700;margin-top:4px}
+.feature{display:grid;grid-template-columns:1fr 1fr;min-height:340px;align-items:center;gap:32px;padding:32px}
+.feature .ph{height:100%;min-height:300px}
+.feature h3{font-size:30px;margin-bottom:12px}
+.feature p{color:var(--muted);max-width:46ch;margin-bottom:20px;font-size:15px}
+/* Footer */
+footer{background:#0e1a2b;color:#ffffff;padding:48px 0;margin-top:40px}
+footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;font-size:13.5px}
+footer h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;opacity:.7}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:8px;opacity:.85}
+footer .base{margin-top:40px;padding-top:20px;border-top:1px solid #ffffff22;font-size:12px;opacity:.6;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media(max-width:900px){
+ .hero,.feature,.grid.c4,.grid.c3,.grid.c2,footer .cols{grid-template-columns:1fr}
+ .nav ul{display:none}
+ .hero-media{min-height:320px}
+}
+
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;div class=&quot;announce&quot;&gt;Complimentary shipping on orders over $150 · New in this week&lt;/div&gt;
+&lt;header&gt;&lt;div class=&quot;container nav&quot;&gt;
+  &lt;a class=&quot;brand&quot; href=&quot;#&quot;&gt;MAISON&amp;nbsp;ÉCLAT&lt;/a&gt;
+  &lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Rings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Necklaces&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Earrings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Watches&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Gifts&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Sale&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+  &lt;div class=&quot;iconset&quot;&gt;&lt;span&gt;⌕&lt;/span&gt;&lt;span&gt;♡&lt;/span&gt;&lt;span&gt;▢&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/header&gt;
+&lt;section class=&quot;hero&quot; style=&quot;padding:0&quot;&gt;
+  &lt;div class=&quot;hero-copy&quot;&gt;
+    &lt;div class=&quot;eyebrow&quot;&gt;The Winter Collection&lt;/div&gt;
+    &lt;h1&gt;A quieter kind of luxury&lt;/h1&gt;
+    &lt;p&gt;Timeless house-jewellery — refined lines, exceptional gemstones and atelier craft, made to be kept for generations.&lt;/p&gt;
+    &lt;div class=&quot;row&quot;&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Shop the collection&lt;/a&gt;&lt;a class=&quot;btn ghost&quot; href=&quot;#&quot;&gt;Book a consultation&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;hero-media&quot;&gt;Hero campaign image&lt;br&gt;&lt;small&gt;4 : 3 · full-bleed on desktop&lt;/small&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section&gt;&lt;div class=&quot;container&quot;&gt;
+  &lt;div class=&quot;sec-head&quot;&gt;&lt;h2&gt;Trending now&lt;/h2&gt;&lt;a href=&quot;#&quot;&gt;View all&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid c4&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Éclat Solitaire&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Éclat Solitaire&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;18k gold · 0.5ct diamond&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$2,450&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Rivière Necklace&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Rivière Necklace&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Platinum · graduated diamonds&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$6,800&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Sapphire Earrings&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Sapphire Earrings&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Royal blue · white gold&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$3,120&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Signature Band&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Signature Band&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Yellow gold · pavé&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$980&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;
+&lt;section class=&quot;feature&quot; style=&quot;background:transparent&quot;&gt;
+  &lt;div class=&quot;ph&quot; style=&quot;border-radius:var(--radius,0)&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Blue Book 2026 — Hidden Garden&quot;&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div class=&quot;eyebrow&quot; style=&quot;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)&quot;&gt;High Jewellery&lt;/div&gt;
+  &lt;h3&gt;Blue Book 2026 — Hidden Garden&lt;/h3&gt;&lt;p&gt;A cinematic tribute to inner strength. Exceptional gemstones and sculpted forms, echoing nature&#x27;s hidden harmonies.&lt;/p&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Discover the collection&lt;/a&gt;&lt;/div&gt;
+&lt;/section&gt;
+&lt;section&gt;&lt;div class=&quot;container&quot;&gt;
+  &lt;div class=&quot;sec-head&quot;&gt;&lt;h2&gt;The Icons&lt;/h2&gt;&lt;a href=&quot;#&quot;&gt;Explore collection&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid c3&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Éclat Solitaire&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Éclat Solitaire&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;18k gold · 0.5ct diamond&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$2,450&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Rivière Necklace&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Rivière Necklace&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Platinum · graduated diamonds&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$6,800&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Sapphire Earrings&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Sapphire Earrings&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Royal blue · white gold&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$3,120&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Signature Band&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Signature Band&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Yellow gold · pavé&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$980&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;
+&lt;section class=&quot;feature&quot; style=&quot;background:transparent&quot;&gt;
+  &lt;div class=&quot;ph&quot; style=&quot;border-radius:var(--radius,0)&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Book a private appointment&quot;&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div class=&quot;eyebrow&quot; style=&quot;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)&quot;&gt;Gifting&lt;/div&gt;
+  &lt;h3&gt;Book a private appointment&lt;/h3&gt;&lt;p&gt;Meet a jeweller in boutique or virtually. Personalisation, resizing and lifetime care included with every piece.&lt;/p&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Book now&lt;/a&gt;&lt;/div&gt;
+&lt;/section&gt;&lt;footer&gt;&lt;div class=&quot;container&quot;&gt;
+&lt;div class=&quot;cols&quot;&gt;
+  &lt;div&gt;&lt;a class=&quot;brand&quot; href=&quot;#&quot; style=&quot;color:inherit&quot;&gt;MAISON&amp;nbsp;ÉCLAT&lt;/a&gt;&lt;p style=&quot;margin-top:10px;opacity:.75;max-width:34ch&quot;&gt;Fine jewellery, crafted to be kept. Atelier-quality pieces with lifetime care.&lt;/p&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;Shop&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Rings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Necklaces&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Earrings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Watches&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;Client care&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Shipping &amp;amp; returns&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Sizing guide&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Care&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Contact&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;The House&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Our story&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Boutiques&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Journal&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;base&quot;&gt;&lt;span&gt;© 2026 Maison Éclat — design exploration sample&lt;/span&gt;&lt;span&gt;Privacy · Terms · Accessibility&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" title="Option 1 — Classic Luxury preview" loading="lazy"></iframe>
+  <div class="opt-actions">
+    <button class="select-btn" data-num="01">Select this direction</button>
+    <a class="open" href="01-classic-luxe.html" target="_blank">Open sample file ↗</a>
+    <span class="hint">Scroll inside the preview — it is the full, responsive sample</span>
+  </div>
+</section>
+
+<section class="option" id="preview-opt-2">
+  <div class="opt-head">
+    <div><span class="opt-num">02</span><h2>Editorial Soft</h2></div>
+    <p class="opt-sub">Warm boutique: soft neutrals, story-driven keepsake framing, rounded imagery</p>
+  </div>
+  <iframe srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;title&gt;Option 2 — Editorial Soft (by charlotte / Sarah &amp; Sebastian-inspired) — EMF-11 Design Exploration&lt;/title&gt;
+&lt;style&gt;
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);font-weight:var(--w-display,600);line-height:1.15}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.container{max-width:1240px;margin:0 auto;padding:0 24px}
+img.ph{background:linear-gradient(135deg,var(--ph-a),var(--ph-b));border-radius:var(--radius,0px);display:flex;align-items:flex-end;padding:18px;color:var(--ph-label,#fff)}
+img.ph small{opacity:.75;font-size:12px;letter-spacing:.04em}
+button,.btn{cursor:pointer;border:1px solid transparent;font-family:var(--font-body)}
+/* Theme */
+:root{
+  --bg:#f6f2ee; --ink:#2e2c2a;
+  --accent:#8a6d5c; --accent-2:#fbdfdf;
+  --muted:#8a8478;
+  --card:#ffffff;
+  --font-display:&quot;Canela&quot;,&quot;Playfair Display&quot;,Georgia,serif;
+  --font-body:&quot;Apercu Pro&quot;,&quot;Inter&quot;,system-ui,sans-serif;
+  --w-display:500;
+  --ph-a:#f2e4da; --ph-b:#d9c3b4;
+}
+/* Header */
+.announce{background:var(--accent);color:var(--on-accent,#fff);font-size:12.5px;text-align:center;padding:8px 16px;letter-spacing:.06em}
+header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid #e8e1d8;z-index:50}
+.nav{display:flex;align-items:center;gap:28px;height:64px}
+.brand{font-family:var(--font-display);font-size:21px;letter-spacing:var(--brand-tracks,.02em)}
+.nav ul{display:flex;gap:22px;list-style:none;font-size:14px;color:var(--muted)}
+.nav ul a:hover{color:var(--ink)}
+.iconset{margin-left:auto;display:flex;gap:16px;font-size:18px;color:var(--ink)}
+/* Hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:0;background:#fbf6f1}
+.hero-copy{padding:72px 48px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+.hero-copy .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.hero-copy h1{font-size:clamp(34px,4.4vw,58px)}
+.hero-copy p{max-width:52ch;color:var(--muted);font-size:16px}
+.hero-media{background:linear-gradient(160deg,var(--ph-a),var(--ph-b));display:flex;align-items:flex-end;padding:22px;color:#fff;font-size:13px;letter-spacing:.06em;min-height:480px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{padding:13px 26px;font-size:14px;font-weight:600;background:var(--accent);color:var(--on-accent,#fff)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+/* Sections */
+section{padding:64px 0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:26px}
+.sec-head h2{font-size:26px}
+.sec-head a{font-size:13px;color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
+.grid{display:grid;gap:18px}
+.grid.c4{grid-template-columns:repeat(4,1fr)}
+.grid.c3{grid-template-columns:repeat(3,1fr)}
+.grid.c2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--card);border:1px solid #e8e1d8;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.card .ph{height:210px}
+.card-body{padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.card-body h3{font-size:15px;font-weight:600;font-family:var(--font-body)}
+.card-body .sub{font-size:12.5px;color:var(--muted)}
+.card-body .price{font-size:14px;font-weight:700;margin-top:4px}
+.feature{display:grid;grid-template-columns:1fr 1fr;min-height:340px;align-items:center;gap:32px;padding:32px}
+.feature .ph{height:100%;min-height:300px}
+.feature h3{font-size:30px;margin-bottom:12px}
+.feature p{color:var(--muted);max-width:46ch;margin-bottom:20px;font-size:15px}
+/* Footer */
+footer{background:#2e2c2a;color:#f6f2ee;padding:48px 0;margin-top:40px}
+footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;font-size:13.5px}
+footer h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;opacity:.7}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:8px;opacity:.85}
+footer .base{margin-top:40px;padding-top:20px;border-top:1px solid #ffffff22;font-size:12px;opacity:.6;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media(max-width:900px){
+ .hero,.feature,.grid.c4,.grid.c3,.grid.c2,footer .cols{grid-template-columns:1fr}
+ .nav ul{display:none}
+ .hero-media{min-height:320px}
+}
+
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;div class=&quot;announce&quot;&gt;Complimentary shipping on orders over $150 · New in this week&lt;/div&gt;
+&lt;header&gt;&lt;div class=&quot;container nav&quot;&gt;
+  &lt;a class=&quot;brand&quot; href=&quot;#&quot;&gt;MAISON&amp;nbsp;ÉCLAT&lt;/a&gt;
+  &lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Rings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Necklaces&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Earrings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Watches&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Gifts&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Sale&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+  &lt;div class=&quot;iconset&quot;&gt;&lt;span&gt;⌕&lt;/span&gt;&lt;span&gt;♡&lt;/span&gt;&lt;span&gt;▢&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/header&gt;
+&lt;section class=&quot;hero&quot; style=&quot;padding:0&quot;&gt;
+  &lt;div class=&quot;hero-copy&quot;&gt;
+    &lt;div class=&quot;eyebrow&quot;&gt;The Winter Collection&lt;/div&gt;
+    &lt;h1&gt;Jewellery with a story&lt;/h1&gt;
+    &lt;p&gt;Soft, personal and made to be handed down. Every piece can carry a name, a date or a memory.&lt;/p&gt;
+    &lt;div class=&quot;row&quot;&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Shop the collection&lt;/a&gt;&lt;a class=&quot;btn ghost&quot; href=&quot;#&quot;&gt;Book a consultation&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;hero-media&quot;&gt;Hero campaign image&lt;br&gt;&lt;small&gt;4 : 3 · full-bleed on desktop&lt;/small&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section&gt;&lt;div class=&quot;container&quot;&gt;
+  &lt;div class=&quot;sec-head&quot;&gt;&lt;h2&gt;Trending now&lt;/h2&gt;&lt;a href=&quot;#&quot;&gt;View all&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid c4&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#f2e4da,#d9c3b4);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Lotus Pendant&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Lotus Pendant&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;14k rose gold · mother-of-pearl&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$420&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#f2e4da,#d9c3b4);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Stackable Ring Set&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Stackable Ring Set&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Sterling silver · opal&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$260&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#f2e4da,#d9c3b4);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Bloom Drop Earrings&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Bloom Drop Earrings&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Freshwater pearl&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$340&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#f2e4da,#d9c3b4);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Heirloom Bracelet&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Heirloom Bracelet&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Rose gold · hand-engraved&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$580&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;
+&lt;section class=&quot;feature&quot; style=&quot;background:#f1e8e0&quot;&gt;
+  &lt;div class=&quot;ph&quot; style=&quot;border-radius:var(--radius,0)&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#f2e4da,#d9c3b4);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Your Lotus Story&quot;&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div class=&quot;eyebrow&quot; style=&quot;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)&quot;&gt;Your Story&lt;/div&gt;
+  &lt;h3&gt;Your Lotus Story&lt;/h3&gt;&lt;p&gt;Every piece can carry a name, a date, a memory. Personalise it in-store or with our concierge team.&lt;/p&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Start your story&lt;/a&gt;&lt;/div&gt;
+&lt;/section&gt;
+&lt;section&gt;&lt;div class=&quot;container&quot;&gt;
+  &lt;div class=&quot;sec-head&quot;&gt;&lt;h2&gt;New Arrivals&lt;/h2&gt;&lt;a href=&quot;#&quot;&gt;Explore collection&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid c3&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#f2e4da,#d9c3b4);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Lotus Pendant&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Lotus Pendant&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;14k rose gold · mother-of-pearl&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$420&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#f2e4da,#d9c3b4);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Stackable Ring Set&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Stackable Ring Set&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Sterling silver · opal&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$260&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#f2e4da,#d9c3b4);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Bloom Drop Earrings&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Bloom Drop Earrings&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Freshwater pearl&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$340&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#f2e4da,#d9c3b4);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Heirloom Bracelet&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Heirloom Bracelet&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Rose gold · hand-engraved&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$580&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;
+&lt;section class=&quot;feature&quot; style=&quot;background:#f1e8e0&quot;&gt;
+  &lt;div class=&quot;ph&quot; style=&quot;border-radius:var(--radius,0)&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#f2e4da,#d9c3b4);width:100%;height:210px;border-radius:inherit&quot; title=&quot;The Bridal Journey&quot;&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div class=&quot;eyebrow&quot; style=&quot;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)&quot;&gt;Bridal&lt;/div&gt;
+  &lt;h3&gt;The Bridal Journey&lt;/h3&gt;&lt;p&gt;From engagement to &#x27;I do&#x27; — a concierge-led path through rings, stacks and keepsake gifting.&lt;/p&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Talk to the bridal team&lt;/a&gt;&lt;/div&gt;
+&lt;/section&gt;&lt;footer&gt;&lt;div class=&quot;container&quot;&gt;
+&lt;div class=&quot;cols&quot;&gt;
+  &lt;div&gt;&lt;a class=&quot;brand&quot; href=&quot;#&quot; style=&quot;color:inherit&quot;&gt;MAISON&amp;nbsp;ÉCLAT&lt;/a&gt;&lt;p style=&quot;margin-top:10px;opacity:.75;max-width:34ch&quot;&gt;Fine jewellery, crafted to be kept. Atelier-quality pieces with lifetime care.&lt;/p&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;Shop&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Rings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Necklaces&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Earrings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Watches&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;Client care&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Shipping &amp;amp; returns&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Sizing guide&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Care&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Contact&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;The House&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Our story&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Boutiques&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Journal&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;base&quot;&gt;&lt;span&gt;© 2026 Maison Éclat — design exploration sample&lt;/span&gt;&lt;span&gt;Privacy · Terms · Accessibility&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" title="Option 2 — Editorial Soft preview" loading="lazy"></iframe>
+  <div class="opt-actions">
+    <button class="select-btn" data-num="02">Select this direction</button>
+    <a class="open" href="02-editorial-soft.html" target="_blank">Open sample file ↗</a>
+    <span class="hint">Scroll inside the preview — it is the full, responsive sample</span>
+  </div>
+</section>
+
+<section class="option" id="preview-opt-3">
+  <div class="opt-head">
+    <div><span class="opt-num">03</span><h2>Dark Gemstone</h2></div>
+    <p class="opt-sub">Gemstone-led dark mode: near-black canvas, gold accent, sale urgency + advisory content</p>
+  </div>
+  <iframe srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;title&gt;Option 3 — Dark Gemstone (Michael Hill-inspired) — EMF-11 Design Exploration&lt;/title&gt;
+&lt;style&gt;
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);font-weight:var(--w-display,600);line-height:1.15}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.container{max-width:1240px;margin:0 auto;padding:0 24px}
+img.ph{background:linear-gradient(135deg,var(--ph-a),var(--ph-b));border-radius:var(--radius,0px);display:flex;align-items:flex-end;padding:18px;color:var(--ph-label,#fff)}
+img.ph small{opacity:.75;font-size:12px;letter-spacing:.04em}
+button,.btn{cursor:pointer;border:1px solid transparent;font-family:var(--font-body)}
+/* Theme */
+:root{
+  --bg:#0d0d0f; --ink:#f5f2ec;
+  --accent:#c8a24b; --accent-2:#1C1B1F;
+  --muted:#9a9a9a;
+  --card:#1c1b1f;
+  --font-display:&quot;Proxima Nova&quot;,&quot;Futura&quot;,system-ui,sans-serif;
+  --font-body:&quot;Proxima Nova&quot;,&quot;Helvetica Neue&quot;,sans-serif;
+  --w-display:700;
+  --ph-a:#282829; --ph-b:#131313;
+}
+/* Header */
+.announce{background:var(--accent);color:var(--on-accent,#fff);font-size:12.5px;text-align:center;padding:8px 16px;letter-spacing:.06em}
+header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid #ffffff14;z-index:50}
+.nav{display:flex;align-items:center;gap:28px;height:64px}
+.brand{font-family:var(--font-display);font-size:21px;letter-spacing:var(--brand-tracks,.02em)}
+.nav ul{display:flex;gap:22px;list-style:none;font-size:14px;color:var(--muted)}
+.nav ul a:hover{color:var(--ink)}
+.iconset{margin-left:auto;display:flex;gap:16px;font-size:18px;color:var(--ink)}
+/* Hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:0;background:#131313}
+.hero-copy{padding:72px 48px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+.hero-copy .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.hero-copy h1{font-size:clamp(34px,4.4vw,58px)}
+.hero-copy p{max-width:52ch;color:var(--muted);font-size:16px}
+.hero-media{background:linear-gradient(160deg,var(--ph-a),var(--ph-b));display:flex;align-items:flex-end;padding:22px;color:#fff;font-size:13px;letter-spacing:.06em;min-height:480px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{padding:13px 26px;font-size:14px;font-weight:600;background:var(--accent);color:var(--on-accent,#fff)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+/* Sections */
+section{padding:64px 0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:26px}
+.sec-head h2{font-size:26px}
+.sec-head a{font-size:13px;color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
+.grid{display:grid;gap:18px}
+.grid.c4{grid-template-columns:repeat(4,1fr)}
+.grid.c3{grid-template-columns:repeat(3,1fr)}
+.grid.c2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--card);border:1px solid #ffffff14;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.card .ph{height:210px}
+.card-body{padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.card-body h3{font-size:15px;font-weight:600;font-family:var(--font-body)}
+.card-body .sub{font-size:12.5px;color:var(--muted)}
+.card-body .price{font-size:14px;font-weight:700;margin-top:4px}
+.feature{display:grid;grid-template-columns:1fr 1fr;min-height:340px;align-items:center;gap:32px;padding:32px}
+.feature .ph{height:100%;min-height:300px}
+.feature h3{font-size:30px;margin-bottom:12px}
+.feature p{color:var(--muted);max-width:46ch;margin-bottom:20px;font-size:15px}
+/* Footer */
+footer{background:#010101;color:#f5f2ec;padding:48px 0;margin-top:40px}
+footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;font-size:13.5px}
+footer h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;opacity:.7}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:8px;opacity:.85}
+footer .base{margin-top:40px;padding-top:20px;border-top:1px solid #ffffff22;font-size:12px;opacity:.6;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media(max-width:900px){
+ .hero,.feature,.grid.c4,.grid.c3,.grid.c2,footer .cols{grid-template-columns:1fr}
+ .nav ul{display:none}
+ .hero-media{min-height:320px}
+}
+.announce{background:#c8a24b;color:#131313;font-weight:700}.btn.ghost{color:var(--ink);border-color:#f5f2ec55}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;div class=&quot;announce&quot;&gt;Complimentary shipping on orders over $150 · New in this week&lt;/div&gt;
+&lt;header&gt;&lt;div class=&quot;container nav&quot;&gt;
+  &lt;a class=&quot;brand&quot; href=&quot;#&quot;&gt;MAISON&amp;nbsp;ÉCLAT&lt;/a&gt;
+  &lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Rings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Necklaces&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Earrings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Watches&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Gifts&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Sale&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+  &lt;div class=&quot;iconset&quot;&gt;&lt;span&gt;⌕&lt;/span&gt;&lt;span&gt;♡&lt;/span&gt;&lt;span&gt;▢&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/header&gt;
+&lt;section class=&quot;hero&quot; style=&quot;padding:0&quot;&gt;
+  &lt;div class=&quot;hero-copy&quot;&gt;
+    &lt;div class=&quot;eyebrow&quot;&gt;The Winter Collection&lt;/div&gt;
+    &lt;h1&gt;Gemstones, up close&lt;/h1&gt;
+    &lt;p&gt;Curated stones and certified lab-grown diamonds — with expert advice and flexible finance at every step.&lt;/p&gt;
+    &lt;div class=&quot;row&quot;&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Shop the collection&lt;/a&gt;&lt;a class=&quot;btn ghost&quot; href=&quot;#&quot;&gt;Book a consultation&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;hero-media&quot;&gt;Hero campaign image&lt;br&gt;&lt;small&gt;4 : 3 · full-bleed on desktop&lt;/small&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section&gt;&lt;div class=&quot;container&quot;&gt;
+  &lt;div class=&quot;sec-head&quot;&gt;&lt;h2&gt;Trending now&lt;/h2&gt;&lt;a href=&quot;#&quot;&gt;View all&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid c4&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#282829,#131313);width:100%;height:210px;border-radius:inherit&quot; title=&quot;September Sapphire&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;September Sapphire&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Lab-grown · 1ct&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$1,290&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#282829,#131313);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Lab-Grown Diamond Ring&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Lab-Grown Diamond Ring&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;18k gold · certified&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$3,450&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#282829,#131313);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Men&#x27;s Signet&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Men&#x27;s Signet&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Sterling silver · onyx&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$390&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#282829,#131313);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Stacking Chain&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Stacking Chain&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;14k gold · 500mm&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$1,150&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;
+&lt;section class=&quot;feature&quot; style=&quot;background:#1a1a1e&quot;&gt;
+  &lt;div class=&quot;ph&quot; style=&quot;border-radius:var(--radius,0)&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#282829,#131313);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Expert advice, wherever you are&quot;&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div class=&quot;eyebrow&quot; style=&quot;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)&quot;&gt;Advisory&lt;/div&gt;
+  &lt;h3&gt;Expert advice, wherever you are&lt;/h3&gt;&lt;p&gt;Connect virtually with a jewellery advisor for personalised guidance — online, in-store or by phone.&lt;/p&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Connect with an advisor&lt;/a&gt;&lt;/div&gt;
+&lt;/section&gt;
+&lt;section&gt;&lt;div class=&quot;container&quot;&gt;
+  &lt;div class=&quot;sec-head&quot;&gt;&lt;h2&gt;Birthstone of the Month&lt;/h2&gt;&lt;a href=&quot;#&quot;&gt;Explore collection&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid c3&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#282829,#131313);width:100%;height:210px;border-radius:inherit&quot; title=&quot;September Sapphire&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;September Sapphire&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Lab-grown · 1ct&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$1,290&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#282829,#131313);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Lab-Grown Diamond Ring&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Lab-Grown Diamond Ring&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;18k gold · certified&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$3,450&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#282829,#131313);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Men&#x27;s Signet&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Men&#x27;s Signet&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Sterling silver · onyx&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$390&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#282829,#131313);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Stacking Chain&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Stacking Chain&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;14k gold · 500mm&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$1,150&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;
+&lt;section class=&quot;feature&quot; style=&quot;background:#1a1a1e&quot;&gt;
+  &lt;div class=&quot;ph&quot; style=&quot;border-radius:var(--radius,0)&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#282829,#131313);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Reserve now, decide later&quot;&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div class=&quot;eyebrow&quot; style=&quot;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)&quot;&gt;Flexible Finance&lt;/div&gt;
+  &lt;h3&gt;Reserve now, decide later&lt;/h3&gt;&lt;p&gt;Reserve your ring online and experience it in-store before you commit. 0% interest options available.&lt;/p&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;See financing options&lt;/a&gt;&lt;/div&gt;
+&lt;/section&gt;&lt;footer&gt;&lt;div class=&quot;container&quot;&gt;
+&lt;div class=&quot;cols&quot;&gt;
+  &lt;div&gt;&lt;a class=&quot;brand&quot; href=&quot;#&quot; style=&quot;color:inherit&quot;&gt;MAISON&amp;nbsp;ÉCLAT&lt;/a&gt;&lt;p style=&quot;margin-top:10px;opacity:.75;max-width:34ch&quot;&gt;Fine jewellery, crafted to be kept. Atelier-quality pieces with lifetime care.&lt;/p&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;Shop&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Rings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Necklaces&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Earrings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Watches&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;Client care&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Shipping &amp;amp; returns&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Sizing guide&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Care&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Contact&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;The House&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Our story&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Boutiques&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Journal&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;base&quot;&gt;&lt;span&gt;© 2026 Maison Éclat — design exploration sample&lt;/span&gt;&lt;span&gt;Privacy · Terms · Accessibility&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" title="Option 3 — Dark Gemstone preview" loading="lazy"></iframe>
+  <div class="opt-actions">
+    <button class="select-btn" data-num="03">Select this direction</button>
+    <a class="open" href="03-dark-gem.html" target="_blank">Open sample file ↗</a>
+    <span class="hint">Scroll inside the preview — it is the full, responsive sample</span>
+  </div>
+</section>
+
+<section class="option" id="preview-opt-4">
+  <div class="opt-head">
+    <div><span class="opt-num">04</span><h2>Minimal Canvas</h2></div>
+    <p class="opt-sub">Bright catalogue: white canvas, pink pops, pill buttons, promotional energy</p>
+  </div>
+  <iframe srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;title&gt;Option 4 — Minimal Canvas (Pandora-inspired) — EMF-11 Design Exploration&lt;/title&gt;
+&lt;style&gt;
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);font-weight:var(--w-display,600);line-height:1.15}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.container{max-width:1240px;margin:0 auto;padding:0 24px}
+img.ph{background:linear-gradient(135deg,var(--ph-a),var(--ph-b));border-radius:var(--radius,0px);display:flex;align-items:flex-end;padding:18px;color:var(--ph-label,#fff)}
+img.ph small{opacity:.75;font-size:12px;letter-spacing:.04em}
+button,.btn{cursor:pointer;border:1px solid transparent;font-family:var(--font-body)}
+/* Theme */
+:root{
+  --bg:#ffffff; --ink:#111111;
+  --accent:#e0489a; --accent-2:#ffd9ea;
+  --muted:#6b6b6b;
+  --card:#ffffff;
+  --font-display:&quot;Montserrat&quot;,Arial,sans-serif;
+  --font-body:&quot;Inter&quot;,&quot;Segoe UI&quot;,sans-serif;
+  --w-display:800;
+  --ph-a:#ffe4f0; --ph-b:#ffb7ce;
+}
+/* Header */
+.announce{background:var(--accent);color:var(--on-accent,#fff);font-size:12.5px;text-align:center;padding:8px 16px;letter-spacing:.06em}
+header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid #ececec;z-index:50}
+.nav{display:flex;align-items:center;gap:28px;height:64px}
+.brand{font-family:var(--font-display);font-size:21px;letter-spacing:var(--brand-tracks,.02em)}
+.nav ul{display:flex;gap:22px;list-style:none;font-size:14px;color:var(--muted)}
+.nav ul a:hover{color:var(--ink)}
+.iconset{margin-left:auto;display:flex;gap:16px;font-size:18px;color:var(--ink)}
+/* Hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:0;background:#fff5fa}
+.hero-copy{padding:72px 48px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+.hero-copy .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.hero-copy h1{font-size:clamp(34px,4.4vw,58px)}
+.hero-copy p{max-width:52ch;color:var(--muted);font-size:16px}
+.hero-media{background:linear-gradient(160deg,var(--ph-a),var(--ph-b));display:flex;align-items:flex-end;padding:22px;color:#fff;font-size:13px;letter-spacing:.06em;min-height:480px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{padding:13px 26px;font-size:14px;font-weight:600;background:var(--accent);color:var(--on-accent,#fff)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+/* Sections */
+section{padding:64px 0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:26px}
+.sec-head h2{font-size:26px}
+.sec-head a{font-size:13px;color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
+.grid{display:grid;gap:18px}
+.grid.c4{grid-template-columns:repeat(4,1fr)}
+.grid.c3{grid-template-columns:repeat(3,1fr)}
+.grid.c2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--card);border:1px solid #ececec;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.card .ph{height:210px}
+.card-body{padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.card-body h3{font-size:15px;font-weight:600;font-family:var(--font-body)}
+.card-body .sub{font-size:12.5px;color:var(--muted)}
+.card-body .price{font-size:14px;font-weight:700;margin-top:4px}
+.feature{display:grid;grid-template-columns:1fr 1fr;min-height:340px;align-items:center;gap:32px;padding:32px}
+.feature .ph{height:100%;min-height:300px}
+.feature h3{font-size:30px;margin-bottom:12px}
+.feature p{color:var(--muted);max-width:46ch;margin-bottom:20px;font-size:15px}
+/* Footer */
+footer{background:#111111;color:#ffffff;padding:48px 0;margin-top:40px}
+footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;font-size:13.5px}
+footer h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;opacity:.7}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:8px;opacity:.85}
+footer .base{margin-top:40px;padding-top:20px;border-top:1px solid #ffffff22;font-size:12px;opacity:.6;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media(max-width:900px){
+ .hero,.feature,.grid.c4,.grid.c3,.grid.c2,footer .cols{grid-template-columns:1fr}
+ .nav ul{display:none}
+ .hero-media{min-height:320px}
+}
+.announce{background:#111;color:#fff;font-weight:700}.btn{border-radius:999px;padding:12px 30px}.card .ph{border-radius:12px}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;div class=&quot;announce&quot;&gt;Complimentary shipping on orders over $150 · New in this week&lt;/div&gt;
+&lt;header&gt;&lt;div class=&quot;container nav&quot;&gt;
+  &lt;a class=&quot;brand&quot; href=&quot;#&quot;&gt;MAISON&amp;nbsp;ÉCLAT&lt;/a&gt;
+  &lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Rings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Necklaces&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Earrings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Watches&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Gifts&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Sale&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+  &lt;div class=&quot;iconset&quot;&gt;&lt;span&gt;⌕&lt;/span&gt;&lt;span&gt;♡&lt;/span&gt;&lt;span&gt;▢&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/header&gt;
+&lt;section class=&quot;hero&quot; style=&quot;padding:0&quot;&gt;
+  &lt;div class=&quot;hero-copy&quot;&gt;
+    &lt;div class=&quot;eyebrow&quot;&gt;The Winter Collection&lt;/div&gt;
+    &lt;h1&gt;Little luxuries, every day&lt;/h1&gt;
+    &lt;p&gt;Stack it, swap it, gift it — fresh arrivals and best-sellers, with complimentary shipping over $150.&lt;/p&gt;
+    &lt;div class=&quot;row&quot;&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Shop the collection&lt;/a&gt;&lt;a class=&quot;btn ghost&quot; href=&quot;#&quot;&gt;Book a consultation&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;hero-media&quot;&gt;Hero campaign image&lt;br&gt;&lt;small&gt;4 : 3 · full-bleed on desktop&lt;/small&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section&gt;&lt;div class=&quot;container&quot;&gt;
+  &lt;div class=&quot;sec-head&quot;&gt;&lt;h2&gt;Trending now&lt;/h2&gt;&lt;a href=&quot;#&quot;&gt;View all&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid c4&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#ffe4f0,#ffb7ce);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Charm Bracelet&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Charm Bracelet&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Adjustable · silver&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$129&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#ffe4f0,#ffb7ce);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Enamel Ring&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Enamel Ring&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Game day edition&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$79&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#ffe4f0,#ffb7ce);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Friendship Set&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Friendship Set&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Pair · gift box incl.&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$110&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#ffe4f0,#ffb7ce);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Memento Charm&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Memento Charm&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Personalisable&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$65&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;
+&lt;section class=&quot;feature&quot; style=&quot;background:#fff&quot;&gt;
+  &lt;div class=&quot;ph&quot; style=&quot;border-radius:var(--radius,0)&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#ffe4f0,#ffb7ce);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Maison x Studio collection&quot;&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div class=&quot;eyebrow&quot; style=&quot;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)&quot;&gt;For Fans&lt;/div&gt;
+  &lt;h3&gt;Maison x Studio collection&lt;/h3&gt;&lt;p&gt;Limited-run charms and boxes inspired by the biggest stories on screen. Collectible, giftable, made to stack.&lt;/p&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Shop the collection&lt;/a&gt;&lt;/div&gt;
+&lt;/section&gt;
+&lt;section&gt;&lt;div class=&quot;container&quot;&gt;
+  &lt;div class=&quot;sec-head&quot;&gt;&lt;h2&gt;Best Sellers&lt;/h2&gt;&lt;a href=&quot;#&quot;&gt;Explore collection&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid c3&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#ffe4f0,#ffb7ce);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Charm Bracelet&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Charm Bracelet&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Adjustable · silver&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$129&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#ffe4f0,#ffb7ce);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Enamel Ring&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Enamel Ring&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Game day edition&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$79&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#ffe4f0,#ffb7ce);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Friendship Set&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Friendship Set&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Pair · gift box incl.&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$110&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#ffe4f0,#ffb7ce);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Memento Charm&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Memento Charm&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Personalisable&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$65&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;
+&lt;section class=&quot;feature&quot; style=&quot;background:#fff&quot;&gt;
+  &lt;div class=&quot;ph&quot; style=&quot;border-radius:var(--radius,0)&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#ffe4f0,#ffb7ce);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Game day &amp; game night&quot;&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div class=&quot;eyebrow&quot; style=&quot;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)&quot;&gt;Made for the Moment&lt;/div&gt;
+  &lt;h3&gt;Game day &amp; game night&lt;/h3&gt;&lt;p&gt;Sport, hobbies and team-colour edits — save on favourites and make it a ritual.&lt;/p&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Shop sport &amp; hobbies&lt;/a&gt;&lt;/div&gt;
+&lt;/section&gt;&lt;footer&gt;&lt;div class=&quot;container&quot;&gt;
+&lt;div class=&quot;cols&quot;&gt;
+  &lt;div&gt;&lt;a class=&quot;brand&quot; href=&quot;#&quot; style=&quot;color:inherit&quot;&gt;MAISON&amp;nbsp;ÉCLAT&lt;/a&gt;&lt;p style=&quot;margin-top:10px;opacity:.75;max-width:34ch&quot;&gt;Fine jewellery, crafted to be kept. Atelier-quality pieces with lifetime care.&lt;/p&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;Shop&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Rings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Necklaces&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Earrings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Watches&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;Client care&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Shipping &amp;amp; returns&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Sizing guide&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Care&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Contact&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;The House&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Our story&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Boutiques&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Journal&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;base&quot;&gt;&lt;span&gt;© 2026 Maison Éclat — design exploration sample&lt;/span&gt;&lt;span&gt;Privacy · Terms · Accessibility&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" title="Option 4 — Minimal Canvas preview" loading="lazy"></iframe>
+  <div class="opt-actions">
+    <button class="select-btn" data-num="04">Select this direction</button>
+    <a class="open" href="04-minimal-canvas.html" target="_blank">Open sample file ↗</a>
+    <span class="hint">Scroll inside the preview — it is the full, responsive sample</span>
+  </div>
+</section>
+
+<section class="option" id="preview-opt-5">
+  <div class="opt-head">
+    <div><span class="opt-num">05</span><h2>Avant-Garde Crystal</h2></div>
+    <p class="opt-sub">Fashion-forward: monochrome + signature red, oversized uppercase type, full-bleed cinematic media</p>
+  </div>
+  <iframe srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;title&gt;Option 5 — Avant-Garde Crystal (Swarovski / EVRY-inspired) — EMF-11 Design Exploration&lt;/title&gt;
+&lt;style&gt;
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);font-weight:var(--w-display,600);line-height:1.15}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.container{max-width:1240px;margin:0 auto;padding:0 24px}
+img.ph{background:linear-gradient(135deg,var(--ph-a),var(--ph-b));border-radius:var(--radius,0px);display:flex;align-items:flex-end;padding:18px;color:var(--ph-label,#fff)}
+img.ph small{opacity:.75;font-size:12px;letter-spacing:.04em}
+button,.btn{cursor:pointer;border:1px solid transparent;font-family:var(--font-body)}
+/* Theme */
+:root{
+  --bg:#ffffff; --ink:#0a0a0a;
+  --accent:#c1121f; --accent-2:#111111;
+  --muted:#747474;
+  --card:#ffffff;
+  --font-display:&quot;Archivo&quot;,&quot;Helvetica Neue&quot;,sans-serif;
+  --font-body:&quot;Inter&quot;,system-ui,sans-serif;
+  --w-display:900;
+  --ph-a:#111111; --ph-b:#3a3a3a;
+}
+/* Header */
+.announce{background:var(--accent);color:var(--on-accent,#fff);font-size:12.5px;text-align:center;padding:8px 16px;letter-spacing:.06em}
+header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid #eeeeee;z-index:50}
+.nav{display:flex;align-items:center;gap:28px;height:64px}
+.brand{font-family:var(--font-display);font-size:21px;letter-spacing:var(--brand-tracks,.02em)}
+.nav ul{display:flex;gap:22px;list-style:none;font-size:14px;color:var(--muted)}
+.nav ul a:hover{color:var(--ink)}
+.iconset{margin-left:auto;display:flex;gap:16px;font-size:18px;color:var(--ink)}
+/* Hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:0;background:#fff}
+.hero-copy{padding:72px 48px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+.hero-copy .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.hero-copy h1{font-size:clamp(34px,4.4vw,58px)}
+.hero-copy p{max-width:52ch;color:var(--muted);font-size:16px}
+.hero-media{background:linear-gradient(160deg,var(--ph-a),var(--ph-b));display:flex;align-items:flex-end;padding:22px;color:#fff;font-size:13px;letter-spacing:.06em;min-height:480px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{padding:13px 26px;font-size:14px;font-weight:600;background:var(--accent);color:var(--on-accent,#fff)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+/* Sections */
+section{padding:64px 0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:26px}
+.sec-head h2{font-size:26px}
+.sec-head a{font-size:13px;color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
+.grid{display:grid;gap:18px}
+.grid.c4{grid-template-columns:repeat(4,1fr)}
+.grid.c3{grid-template-columns:repeat(3,1fr)}
+.grid.c2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--card);border:1px solid #eeeeee;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.card .ph{height:210px}
+.card-body{padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.card-body h3{font-size:15px;font-weight:600;font-family:var(--font-body)}
+.card-body .sub{font-size:12.5px;color:var(--muted)}
+.card-body .price{font-size:14px;font-weight:700;margin-top:4px}
+.feature{display:grid;grid-template-columns:1fr 1fr;min-height:340px;align-items:center;gap:32px;padding:32px}
+.feature .ph{height:100%;min-height:300px}
+.feature h3{font-size:30px;margin-bottom:12px}
+.feature p{color:var(--muted);max-width:46ch;margin-bottom:20px;font-size:15px}
+/* Footer */
+footer{background:#0a0a0a;color:#ffffff;padding:48px 0;margin-top:40px}
+footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;font-size:13.5px}
+footer h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;opacity:.7}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:8px;opacity:.85}
+footer .base{margin-top:40px;padding-top:20px;border-top:1px solid #ffffff22;font-size:12px;opacity:.6;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media(max-width:900px){
+ .hero,.feature,.grid.c4,.grid.c3,.grid.c2,footer .cols{grid-template-columns:1fr}
+ .nav ul{display:none}
+ .hero-media{min-height:320px}
+}
+.hero-copy h1{text-transform:uppercase;letter-spacing:-.01em;font-size:clamp(44px,6.5vw,96px)}.hero{grid-template-columns:1fr .7fr}.hero-media{min-height:640px;background:linear-gradient(200deg,#111,#3a3a3a 60%,#c1121f)}.btn{padding:14px 34px;letter-spacing:.08em;text-transform:uppercase;font-size:12.5px}.card{border:none;box-shadow:0 1px 0 #00000012}.announce{font-weight:700;letter-spacing:.18em;font-size:11px}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;div class=&quot;announce&quot;&gt;Complimentary shipping on orders over $150 · New in this week&lt;/div&gt;
+&lt;header&gt;&lt;div class=&quot;container nav&quot;&gt;
+  &lt;a class=&quot;brand&quot; href=&quot;#&quot;&gt;MAISON&amp;nbsp;ÉCLAT&lt;/a&gt;
+  &lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Rings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Necklaces&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Earrings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Watches&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Gifts&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Sale&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+  &lt;div class=&quot;iconset&quot;&gt;&lt;span&gt;⌕&lt;/span&gt;&lt;span&gt;♡&lt;/span&gt;&lt;span&gt;▢&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/header&gt;
+&lt;section class=&quot;hero&quot; style=&quot;padding:0&quot;&gt;
+  &lt;div class=&quot;hero-copy&quot;&gt;
+    &lt;div class=&quot;eyebrow&quot;&gt;The Winter Collection&lt;/div&gt;
+    &lt;h1&gt;Crystal at full scale&lt;/h1&gt;
+    &lt;p&gt;Statement silhouettes in our signature red — engineered to move, made to be seen.&lt;/p&gt;
+    &lt;div class=&quot;row&quot;&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Shop the collection&lt;/a&gt;&lt;a class=&quot;btn ghost&quot; href=&quot;#&quot;&gt;Book a consultation&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;hero-media&quot;&gt;Hero campaign image&lt;br&gt;&lt;small&gt;4 : 3 · full-bleed on desktop&lt;/small&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section&gt;&lt;div class=&quot;container&quot;&gt;
+  &lt;div class=&quot;sec-head&quot;&gt;&lt;h2&gt;Trending now&lt;/h2&gt;&lt;a href=&quot;#&quot;&gt;View all&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid c4&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#111111,#3a3a3a);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Cascade Crystal Necklace&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Cascade Crystal Necklace&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Signature red drop&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$890&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#111111,#3a3a3a);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Orbit Hoop Earrings&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Orbit Hoop Earrings&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Crystal-set · gold plate&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$460&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#111111,#3a3a3a);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Prism Cuff&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Prism Cuff&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Unisex · statement&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$620&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#111111,#3a3a3a);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Aurora Watch&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Aurora Watch&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Crystal bezel · 36mm&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$1,350&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;
+&lt;section class=&quot;feature&quot; style=&quot;background:transparent&quot;&gt;
+  &lt;div class=&quot;ph&quot; style=&quot;border-radius:var(--radius,0)&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#111111,#3a3a3a);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Runway 2026&quot;&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div class=&quot;eyebrow&quot; style=&quot;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)&quot;&gt;Campaign&lt;/div&gt;
+  &lt;h3&gt;Runway 2026&lt;/h3&gt;&lt;p&gt;A cinematic lookbook of crystal at full scale — statement silhouettes engineered to move with you.&lt;/p&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Watch the film&lt;/a&gt;&lt;/div&gt;
+&lt;/section&gt;
+&lt;section&gt;&lt;div class=&quot;container&quot;&gt;
+  &lt;div class=&quot;sec-head&quot;&gt;&lt;h2&gt;Runway to Wardrobe&lt;/h2&gt;&lt;a href=&quot;#&quot;&gt;Explore collection&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid c3&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#111111,#3a3a3a);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Cascade Crystal Necklace&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Cascade Crystal Necklace&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Signature red drop&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$890&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#111111,#3a3a3a);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Orbit Hoop Earrings&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Orbit Hoop Earrings&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Crystal-set · gold plate&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$460&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#111111,#3a3a3a);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Prism Cuff&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Prism Cuff&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Unisex · statement&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$620&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#111111,#3a3a3a);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Aurora Watch&quot;&gt;&lt;div class=&quot;card-body&quot;&gt;&lt;h3&gt;Aurora Watch&lt;/h3&gt;&lt;div class=&quot;sub&quot;&gt;Crystal bezel · 36mm&lt;/div&gt;&lt;div class=&quot;price&quot;&gt;$1,350&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/section&gt;
+&lt;section class=&quot;feature&quot; style=&quot;background:transparent&quot;&gt;
+  &lt;div class=&quot;ph&quot; style=&quot;border-radius:var(--radius,0)&quot;&gt;&lt;img class=&quot;ph&quot; src=&quot;data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22&gt;&lt;/svg&gt;&quot; alt=&quot;&quot; style=&quot;background:linear-gradient(135deg,#111111,#3a3a3a);width:100%;height:210px;border-radius:inherit&quot; title=&quot;Signature Red drop&quot;&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div class=&quot;eyebrow&quot; style=&quot;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)&quot;&gt;For the Bold&lt;/div&gt;
+  &lt;h3&gt;Signature Red drop&lt;/h3&gt;&lt;p&gt;A limited capsule in our signature red. Numbers are limited; pieces are numbered.&lt;/p&gt;&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Reserve yours&lt;/a&gt;&lt;/div&gt;
+&lt;/section&gt;&lt;footer&gt;&lt;div class=&quot;container&quot;&gt;
+&lt;div class=&quot;cols&quot;&gt;
+  &lt;div&gt;&lt;a class=&quot;brand&quot; href=&quot;#&quot; style=&quot;color:inherit&quot;&gt;MAISON&amp;nbsp;ÉCLAT&lt;/a&gt;&lt;p style=&quot;margin-top:10px;opacity:.75;max-width:34ch&quot;&gt;Fine jewellery, crafted to be kept. Atelier-quality pieces with lifetime care.&lt;/p&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;Shop&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Rings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Necklaces&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Earrings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Watches&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;Client care&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Shipping &amp;amp; returns&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Sizing guide&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Care&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Contact&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;h4&gt;The House&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Our story&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Boutiques&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Journal&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;base&quot;&gt;&lt;span&gt;© 2026 Maison Éclat — design exploration sample&lt;/span&gt;&lt;span&gt;Privacy · Terms · Accessibility&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" title="Option 5 — Avant-Garde Crystal preview" loading="lazy"></iframe>
+  <div class="opt-actions">
+    <button class="select-btn" data-num="05">Select this direction</button>
+    <a class="open" href="05-avant-garde.html" target="_blank">Open sample file ↗</a>
+    <span class="hint">Scroll inside the preview — it is the full, responsive sample</span>
+  </div>
+</section>
+
+<footer><div class="container">
+  <p>Every option shares the same underlying structure (hero, merchandised collections, feature stories, trust/service blocks, footer) so the comparison is about <em>feel</em> — palette, type, tone and pace — not layout. Selecting one direction (or a blend) lets us build the canonical design system: tokens, components, then pages.</p>
+</div></footer>
+
+<div id="sel-bar"><span id="sel-text"></span><button id="sel-copy">Copy selection</button><button id="sel-clear">Clear</button></div>
+
+<script>
+const opts = [{"num": "01", "name": "Classic Luxury"}, {"num": "02", "name": "Editorial Soft"}, {"num": "03", "name": "Dark Gemstone"}, {"num": "04", "name": "Minimal Canvas"}, {"num": "05", "name": "Avant-Garde Crystal"}];
+const KEY = "emf11-selection";
+const bar = document.getElementById("sel-bar"), selText = document.getElementById("sel-text");
+
+function setSel(num, save=true){
+  document.querySelectorAll(".card,.select-btn").forEach(el=>el.classList.remove("selected"));
+  if(num){
+    document.querySelectorAll(`[data-num="${num}"]`).forEach(el=>el.classList.add("selected"));
+    const o = opts.find(o=>o.num===num);
+    selText.textContent = "Selected direction: " + o.num + " — " + o.name;
+    bar.classList.add("show");
+  } else bar.classList.remove("show");
+  if(save) localStorage.setItem(KEY, num || "");
+}
+document.querySelectorAll(".select-btn").forEach(b=>b.addEventListener("click",()=>setSel(b.dataset.num)));
+document.getElementById("sel-clear").addEventListener("click",()=>setSel(null));
+document.getElementById("sel-copy").addEventListener("click",async()=>{
+  const v = localStorage.getItem(KEY)||"";
+  const o = opts.find(o=>o.num===v);
+  try{ await navigator.clipboard.writeText(o?"Selected design direction: "+o.num+" — "+o.name:""); selText.textContent="Copied to clipboard ✓"; setTimeout(()=>bar.classList.add("show"),0); }catch(e){ selText.textContent="Selected: "+(o?o.num+" — "+o.name:"—"); }
+});
+
+// restore
+setSel(localStorage.getItem(KEY)||null, false);
+
+// sticky tab highlighting
+const links = [...document.querySelectorAll(".tabs a[data-tab]")];
+const map = {}; links.forEach(l=>map[l.dataset.tab]=l);
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ links.forEach(l=>l.classList.remove("active")); (map[e.target.dataset.num]||links[links.length-1]).classList.add("active"); } });
+},{rootMargin:"-20% 0px -70% 0px"});
+document.querySelectorAll(".option").forEach(s=>io.observe(s));
+</script>
+</body>
+</html>

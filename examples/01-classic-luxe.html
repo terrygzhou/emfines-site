@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Option 1 — Classic Luxury (Tiffany-inspired) — EMF-11 Design Exploration</title>
+<style>
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);font-weight:var(--w-display,600);line-height:1.15}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.container{max-width:1240px;margin:0 auto;padding:0 24px}
+img.ph{background:linear-gradient(135deg,var(--ph-a),var(--ph-b));border-radius:var(--radius,0px);display:flex;align-items:flex-end;padding:18px;color:var(--ph-label,#fff)}
+img.ph small{opacity:.75;font-size:12px;letter-spacing:.04em}
+button,.btn{cursor:pointer;border:1px solid transparent;font-family:var(--font-body)}
+/* Theme */
+:root{
+  --bg:#ffffff; --ink:#0e1a2b;
+  --accent:#1e4d8c; --accent-2:#ffffff;
+  --muted:#5a6572;
+  --card:#ffffff;
+  --font-display:"Didot","Bodoni MT","Times New Roman",serif;
+  --font-body:"Helvetica Neue",Arial,sans-serif;
+  --w-display:500;
+  --ph-a:#e9edf2; --ph-b:#c8d2dd;
+}
+/* Header */
+.announce{background:var(--accent);color:var(--on-accent,#fff);font-size:12.5px;text-align:center;padding:8px 16px;letter-spacing:.06em}
+header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid #e5e7ea;z-index:50}
+.nav{display:flex;align-items:center;gap:28px;height:64px}
+.brand{font-family:var(--font-display);font-size:21px;letter-spacing:var(--brand-tracks,.02em)}
+.nav ul{display:flex;gap:22px;list-style:none;font-size:14px;color:var(--muted)}
+.nav ul a:hover{color:var(--ink)}
+.iconset{margin-left:auto;display:flex;gap:16px;font-size:18px;color:var(--ink)}
+/* Hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:0;background:#f7f8fa}
+.hero-copy{padding:72px 48px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+.hero-copy .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.hero-copy h1{font-size:clamp(34px,4.4vw,58px)}
+.hero-copy p{max-width:52ch;color:var(--muted);font-size:16px}
+.hero-media{background:linear-gradient(160deg,var(--ph-a),var(--ph-b));display:flex;align-items:flex-end;padding:22px;color:#fff;font-size:13px;letter-spacing:.06em;min-height:480px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{padding:13px 26px;font-size:14px;font-weight:600;background:var(--accent);color:var(--on-accent,#fff)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+/* Sections */
+section{padding:64px 0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:26px}
+.sec-head h2{font-size:26px}
+.sec-head a{font-size:13px;color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
+.grid{display:grid;gap:18px}
+.grid.c4{grid-template-columns:repeat(4,1fr)}
+.grid.c3{grid-template-columns:repeat(3,1fr)}
+.grid.c2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--card);border:1px solid #e5e7ea;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.card .ph{height:210px}
+.card-body{padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.card-body h3{font-size:15px;font-weight:600;font-family:var(--font-body)}
+.card-body .sub{font-size:12.5px;color:var(--muted)}
+.card-body .price{font-size:14px;font-weight:700;margin-top:4px}
+.feature{display:grid;grid-template-columns:1fr 1fr;min-height:340px;align-items:center;gap:32px;padding:32px}
+.feature .ph{height:100%;min-height:300px}
+.feature h3{font-size:30px;margin-bottom:12px}
+.feature p{color:var(--muted);max-width:46ch;margin-bottom:20px;font-size:15px}
+/* Footer */
+footer{background:#0e1a2b;color:#ffffff;padding:48px 0;margin-top:40px}
+footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;font-size:13.5px}
+footer h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;opacity:.7}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:8px;opacity:.85}
+footer .base{margin-top:40px;padding-top:20px;border-top:1px solid #ffffff22;font-size:12px;opacity:.6;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media(max-width:900px){
+ .hero,.feature,.grid.c4,.grid.c3,.grid.c2,footer .cols{grid-template-columns:1fr}
+ .nav ul{display:none}
+ .hero-media{min-height:320px}
+}
+
+</style>
+</head>
+<body>
+
+<div class="announce">Complimentary shipping on orders over $150 · New in this week</div>
+<header><div class="container nav">
+  <a class="brand" href="#">MAISON&nbsp;ÉCLAT</a>
+  <ul><li><a href="#">Rings</a></li><li><a href="#">Necklaces</a></li><li><a href="#">Earrings</a></li><li><a href="#">Watches</a></li><li><a href="#">Gifts</a></li><li><a href="#">Sale</a></li></ul>
+  <div class="iconset"><span>⌕</span><span>♡</span><span>▢</span></div>
+</div></header>
+<section class="hero" style="padding:0">
+  <div class="hero-copy">
+    <div class="eyebrow">The Winter Collection</div>
+    <h1>A quieter kind of luxury</h1>
+    <p>Timeless house-jewellery — refined lines, exceptional gemstones and atelier craft, made to be kept for generations.</p>
+    <div class="row"><a class="btn" href="#">Shop the collection</a><a class="btn ghost" href="#">Book a consultation</a></div>
+  </div>
+  <div class="hero-media">Hero campaign image<br><small>4 : 3 · full-bleed on desktop</small></div>
+</section>
+
+<section><div class="container">
+  <div class="sec-head"><h2>Trending now</h2><a href="#">View all</a></div>
+  <div class="grid c4"><div class="card"><img class="ph" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22></svg>" alt="" style="background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit" title="Éclat Solitaire"><div class="card-body"><h3>Éclat Solitaire</h3><div class="sub">18k gold · 0.5ct diamond</div><div class="price">$2,450</div></div></div><div class="card"><img class="ph" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22></svg>" alt="" style="background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit" title="Rivière Necklace"><div class="card-body"><h3>Rivière Necklace</h3><div class="sub">Platinum · graduated diamonds</div><div class="price">$6,800</div></div></div><div class="card"><img class="ph" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22></svg>" alt="" style="background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit" title="Sapphire Earrings"><div class="card-body"><h3>Sapphire Earrings</h3><div class="sub">Royal blue · white gold</div><div class="price">$3,120</div></div></div><div class="card"><img class="ph" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22></svg>" alt="" style="background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit" title="Signature Band"><div class="card-body"><h3>Signature Band</h3><div class="sub">Yellow gold · pavé</div><div class="price">$980</div></div></div></div>
+</div></section>
+<section class="feature" style="background:transparent">
+  <div class="ph" style="border-radius:var(--radius,0)"><img class="ph" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22></svg>" alt="" style="background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit" title="Blue Book 2026 — Hidden Garden"></div>
+  <div><div class="eyebrow" style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)">High Jewellery</div>
+  <h3>Blue Book 2026 — Hidden Garden</h3><p>A cinematic tribute to inner strength. Exceptional gemstones and sculpted forms, echoing nature's hidden harmonies.</p><a class="btn" href="#">Discover the collection</a></div>
+</section>
+<section><div class="container">
+  <div class="sec-head"><h2>The Icons</h2><a href="#">Explore collection</a></div>
+  <div class="grid c3"><div class="card"><img class="ph" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22></svg>" alt="" style="background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit" title="Éclat Solitaire"><div class="card-body"><h3>Éclat Solitaire</h3><div class="sub">18k gold · 0.5ct diamond</div><div class="price">$2,450</div></div></div><div class="card"><img class="ph" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22></svg>" alt="" style="background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit" title="Rivière Necklace"><div class="card-body"><h3>Rivière Necklace</h3><div class="sub">Platinum · graduated diamonds</div><div class="price">$6,800</div></div></div><div class="card"><img class="ph" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22></svg>" alt="" style="background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit" title="Sapphire Earrings"><div class="card-body"><h3>Sapphire Earrings</h3><div class="sub">Royal blue · white gold</div><div class="price">$3,120</div></div></div><div class="card"><img class="ph" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22></svg>" alt="" style="background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit" title="Signature Band"><div class="card-body"><h3>Signature Band</h3><div class="sub">Yellow gold · pavé</div><div class="price">$980</div></div></div></div>
+</div></section>
+<section class="feature" style="background:transparent">
+  <div class="ph" style="border-radius:var(--radius,0)"><img class="ph" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22210%22 height=%22210%22></svg>" alt="" style="background:linear-gradient(135deg,#e9edf2,#c8d2dd);width:100%;height:210px;border-radius:inherit" title="Book a private appointment"></div>
+  <div><div class="eyebrow" style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)">Gifting</div>
+  <h3>Book a private appointment</h3><p>Meet a jeweller in boutique or virtually. Personalisation, resizing and lifetime care included with every piece.</p><a class="btn" href="#">Book now</a></div>
+</section><footer><div class="container">
+<div class="cols">
+  <div><a class="brand" href="#" style="color:inherit">MAISON&nbsp;ÉCLAT</a><p style="margin-top:10px;opacity:.75;max-width:34ch">Fine jewellery, crafted to be kept. Atelier-quality pieces with lifetime care.</p></div>
+  <div><h4>Shop</h4><ul><li><a href="#">Rings</a></li><li><a href="#">Necklaces</a></li><li><a href="#">Earrings</a></li><li><a href="#">Watches</a></li></ul></div>
+  <div><h4>Client care</h4><ul><li><a href="#">Shipping &amp; returns</a></li><li><a href="#">Sizing guide</a></li><li><a href="#">Care</a></li><li><a href="#">Contact</a></li></ul></div>
+  <div><h4>The House</h4><ul><li><a href="#">Our story</a></li><li><a href="#">Boutiques</a></li><li><a href="#">Journal</a></li></ul></div>
+</div>
+<div class="base"><span>© 2026 Maison Éclat — design exploration sample</span><span>Privacy · Terms · Accessibility</span></div>
+</div></footer>
+</body>
+</html>

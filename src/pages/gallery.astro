@@ -1,0 +1,89 @@
+---
+import Base from '@/layouts/Base.astro';
+import { assets } from '@/generated/assets-manifest';
+import { groupByCategory } from '@/lib/gallery';
+
+const groups = groupByCategory(assets);
+
+const filterBtn =
+  'border border-line px-3.5 py-1.5 text-xs uppercase tracking-[0.14em] text-muted transition-colors hover:border-ink hover:text-ink';
+---
+export const prerender = true;
+<Base
+  title="Gallery — EM Fine Studio"
+  active="/gallery"
+  description="Every piece and component from the EM Fine Studio workshop, grouped by category."
+>
+  <section class="py-14">
+    <div class="mx-auto max-w-[720px] px-6">
+      <p class="text-xs tracking-[0.22em] uppercase text-accent mb-3">The gallery</p>
+      <h1 class="text-[34px] lg:text-[46px]">From the bench.</h1>
+      <p class="mt-4 text-muted max-w-[52ch]">
+        Every piece and component photographed in the studio — grouped by category. Filter to a
+        type, or browse the full set.
+      </p>
+    </div>
+  </section>
+
+  <section class="pb-16">
+    <div class="mx-auto max-w-[1240px] px-6">
+      <!-- Category filter (EMF-6 FR-3: client-side, no reload; server-rendered content stays visible without JS) -->
+      <div class="flex flex-wrap gap-2 mb-8" role="group" aria-label="Filter gallery by category">
+        <button
+          type="button"
+          data-gallery-filter="all"
+          class:list={[filterBtn, 'border-ink text-ink']}
+          aria-pressed="true">
+          All ({assets.length})
+        </button>
+        {groups.map((g) => (
+          <button type="button" data-gallery-filter={g.category} class:list={[filterBtn]} aria-pressed="false">
+            {g.category} ({g.items.length})
+          </button>
+        ))}
+      </div>
+
+      {groups.map((g) => (
+        <section data-gallery-section={g.category} class="mb-12 last:mb-0">
+          <h2 class="text-[26px] mb-5">
+            {g.category} <span class="text-base text-muted align-super">{g.items.length}</span>
+          </h2>
+          <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            {g.items.map((item) => (
+              <figure class="m-0 border border-line bg-bg overflow-hidden">
+                {item.width && item.height ? (
+                  <img
+                    src={item.src}
+                    width={item.width}
+                    height={item.height}
+                    loading="lazy"
+                    decoding="async"
+                    alt={item.description}
+                    class="w-full h-auto block"
+                  />
+                ) : (
+                  <div class="aspect-[3/2] overflow-hidden">
+                    <img
+                      src={item.src}
+                      loading="lazy"
+                      decoding="async"
+                      alt={item.description}
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <figcaption class="px-3 py-2.5 text-xs text-muted border-t border-line leading-snug">
+                  {item.description}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </section>
+</Base>
+<script>
+  import { initGalleryFilter } from '@/scripts/gallery-filter';
+  initGalleryFilter();
+</script>

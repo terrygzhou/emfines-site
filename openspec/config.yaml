@@ -1,0 +1,37 @@
+schema: spec-driven
+
+# Project context shown to AI when creating artifacts.
+context: |
+  Project: EM Fine Studio site (emfines-site) — Astro 7 static build on Cloudflare
+  Workers via @astrojs/cloudflare v14, Tailwind CSS v4, TypeScript, Node 22.
+  Production worker: emfines-site (stable URL emfines-site.terry-g-zhou.workers.dev,
+  never renamed). Previews deploy to a SEPARATE worker: emfines-site-preview.
+  Constitution: memory/constitution.md — seven principles every artifact obeys:
+    I static-first/free-tier (no paid tooling, no CMS, no permanent DB; expiring KV +
+    free Email Service only),
+    II PII is studio-inbox-only (30-day TTL expiring archive, auth-gated owner access),
+    III quiet-luxury design (01-classic-luxe tokens, system fonts, one accent),
+    IV never trust the client (server re-validation),
+    V degrade gracefully (optional integrations never fail the durable write path),
+    VI test-first (pure logic unit-tested via npm test; runtime smoke-tested live),
+    VII stable deploy + isolated previews.
+  Test harness: npm test = node --test tests/*.test.mjs over esbuild-bundled pure TS
+  (pretest writes node_modules/.cache/*.mjs). astro build / wrangler commands write
+  outside cwd and run escalated.
+
+# Per-artifact rules.
+rules:
+  proposal:
+    - Note explicit non-goals when scope is ambiguous
+    - Keep Impact limited to code/config paths actually touched
+  specs:
+    - Every requirement has at least one Scenario
+    - Scenarios must be observable outcomes
+  design:
+    - Cite the constitution principles each decision upholds
+    - Record rejected alternatives with reasons
+  tasks:
+    - Pure logic follows test-first discipline
+    - Numbered phase groups
+    - Every task cites an acceptance scenario
+    - Verification includes astro check, unit tests and live preview smoke

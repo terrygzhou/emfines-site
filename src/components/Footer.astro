@@ -1,0 +1,35 @@
+---
+import { SITE } from '@/config';
+---
+<footer class="bg-ink text-white mt-10">
+  <div class="mx-auto max-w-[1240px] px-6 py-12 grid gap-8 md:grid-cols-[2fr_1fr_1fr] text-[13.5px]">
+    <div>
+      <p class="font-display text-xl">EM Fine Studio</p>
+      <p class="mt-3 opacity-75 max-w-[34ch]">
+        {SITE.tagline}
+      </p>
+    </div>
+    <div>
+      <h4 class="text-xs tracking-[0.14em] uppercase opacity-70 mb-3">Services</h4>
+      <ul class="flex flex-col gap-2 opacity-85">
+        <li><a class="hover:opacity-100" href="/design">Custom design</a></li>
+        <li><a class="hover:opacity-100" href="/repairs">Repairs</a></li>
+        <li><a class="hover:opacity-100" href="/pieces">Pieces &amp; components</a></li>
+        <li><a class="hover:opacity-100" href="/contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-xs tracking-[0.14em] uppercase opacity-70 mb-3">Contact</h4>
+      <ul class="flex flex-col gap-2 opacity-85">
+        <li><a class="hover:opacity-100" href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+        <li>{SITE.suburb}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-white/15">
+    <div class="mx-auto max-w-[1240px] px-6 py-5 flex justify-between flex-wrap gap-4 text-xs opacity-60">
+      <span>© {new Date().getFullYear()} {SITE.name}</span>
+      <span>Australian design, crafted with experience and care.</span>
+    </div>
+  </div>
+</footer>

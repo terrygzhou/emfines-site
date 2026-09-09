@@ -1,0 +1,36 @@
+---
+
+import Base from '@/layouts/Base.astro';
+---
+export const prerender = true;
+<Base title="Pieces & components — EM Fine Studio" active="/pieces"
+      description="Carefully crafted solid gold and sterling silver pieces, plus quality components for makers and studios.">
+  <section class="py-14">
+    <div class="mx-auto max-w-[720px] px-6">
+      <p class="text-xs tracking-[0.22em] uppercase text-accent mb-3">Pieces &amp; components</p>
+      <h1 class="text-[34px] lg:text-[46px]">Carefully crafted pieces &amp; components.</h1>
+      <p class="mt-4 text-muted max-w-[52ch]">
+        Carefully crafted solid gold and sterling silver pieces. Quality gold &amp; silver jewellery components
+        are available for makers and studios.
+      </p>
+    </div>
+  </section>
+
+  <section class="pb-14">
+    <div class="mx-auto max-w-[1240px] px-6 grid md:grid-cols-2 gap-5">
+      <div class="ph min-h-[300px]" aria-hidden="true"><span>Photo slot — crafted piece</span></div>
+      <div class="ph min-h-[300px]" aria-hidden="true"><span>Photo slot — components</span></div>
+    </div>
+  </section>
+
+  <section class="pb-16">
+    <div class="mx-auto max-w-[720px] px-6 flex flex-wrap items-center gap-6">
+      <a href="/gallery" class="inline-block bg-accent text-white px-7 py-3.5 text-sm font-semibold hover:bg-ink transition-colors">
+        Browse the gallery
+      </a>
+      <a href="/contact" class="text-sm text-accent underline underline-offset-4 hover:text-ink transition-colors">
+        Ask what's available
+      </a>
+    </div>
+  </section>
+</Base>

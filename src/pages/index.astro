@@ -1,0 +1,98 @@
+---
+
+import Base from '@/layouts/Base.astro';
+import { SITE } from '@/config';
+---
+export const prerender = true;
+<Base title="EM Fine Studio — Australian Jewellery Design Studio">
+  <!-- 1. Hero (T1 spec §3/§5 — solid, typographic; photo swap is a later iteration) -->
+  <section class="bg-accent-soft">
+    <div class="grid lg:grid-cols-[1.1fr_0.9fr]">
+      <div class="px-6 py-16 lg:py-20 lg:px-12 flex flex-col justify-center gap-5">
+        <p class="text-xs tracking-[0.22em] uppercase text-accent">{SITE.name} · Australian jewellery design studio</p>
+        <h1 class="text-[34px] lg:text-[54px]">Your story, crafted in solid gold.</h1>
+        <p class="max-w-[52ch] text-muted">
+          Australian design, crafted with experience and care. Two decades of custom jewellery, repairs and fine pieces.
+        </p>
+        <div>
+          <a href="/design" class="inline-block bg-accent text-white px-7 py-3.5 text-sm font-semibold hover:bg-ink transition-colors">
+            Start your custom design
+          </a>
+        </div>
+      </div>
+      <div class="ph min-h-[320px] lg:min-h-[480px]" aria-hidden="true">
+        <span>Studio image slot</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. The studio -->
+  <section class="py-16">
+    <div class="mx-auto max-w-[720px] px-6">
+      <h2 class="text-[26px] mb-4">The studio</h2>
+      <p class="text-muted max-w-[62ch]">
+        EM Fine Studio is an Australian jewellery design studio with more than 20 years in the trade. We work in
+        solid gold and 925 sterling silver — designing one-of-a-kind pieces, restoring treasured items, and
+        crafting quality components. Two decades of hands-on work means every piece leaves the bench with the
+        same standard: craftsmanship, quality, and attention to detail.
+      </p>
+    </div>
+  </section>
+
+  <!-- 3. Three services -->
+  <section class="pb-16">
+    <div class="mx-auto max-w-[1240px] px-6">
+      <div class="flex items-baseline justify-between mb-6">
+        <h2 class="text-[26px]">What we do</h2>
+      </div>
+      <div class="grid gap-5 md:grid-cols-3">
+        <article class="border border-line flex flex-col gap-2.5 p-5 relative">
+          <span class="absolute top-4 right-4 text-[10px] tracking-[0.14em] uppercase text-accent font-semibold">
+            Most requested
+          </span>
+          <h3 class="text-[15px] font-semibold font-body">Custom Design</h3>
+          <p class="text-sm text-muted">
+            One of a kind. From your idea, sketch or treasured heirloom, we design and craft a piece that's yours alone.
+          </p>
+          <a class="text-sm text-accent font-semibold" href="/design">Custom design &rarr;</a>
+        </article>
+        <article class="border border-line flex flex-col gap-2.5 p-5">
+          <h3 class="text-[15px] font-semibold font-body">Repairs</h3>
+          <p class="text-sm text-muted">
+            Chain broken? Stone lost? We repair and restore the pieces that matter, so they keep their story.
+          </p>
+          <a class="text-sm text-accent font-semibold" href="/repairs">Repairs &rarr;</a>
+        </article>
+        <article class="border border-line flex flex-col gap-2.5 p-5">
+          <h3 class="text-[15px] font-semibold font-body">Pieces &amp; Components</h3>
+          <p class="text-sm text-muted">
+            Carefully crafted solid gold and sterling silver pieces, plus quality components for makers.
+          </p>
+          <a class="text-sm text-accent font-semibold" href="/pieces">Pieces &amp; components &rarr;</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Why us -->
+  <section class="pb-16">
+    <div class="mx-auto max-w-[1240px] px-6 grid md:grid-cols-[1fr_2fr] gap-8 items-start">
+      <h2 class="text-[26px]">Why us</h2>
+      <ul class="flex flex-col gap-3 text-[15px]">
+        <li class="flex gap-3"><span class="text-accent font-display">—</span> 20+ years of hands-on jewellery experience</li>
+        <li class="flex gap-3"><span class="text-accent font-display">—</span> Solid gold and 925 sterling silver only</li>
+        <li class="flex gap-3"><span class="text-accent font-display">—</span> Every design is made for one person — never templated</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5. CTA band -->
+  <section class="bg-accent text-white py-14">
+    <div class="mx-auto max-w-[1240px] px-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <h2 class="text-[26px] text-white">Have a piece in mind?</h2>
+      <a href="/design" class="inline-block bg-white text-ink px-7 py-3.5 text-sm font-semibold hover:bg-ink hover:text-white transition-colors">
+        Start your custom design
+      </a>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,134 @@
+---
+// T1 spec §4 — Custom Design Enquiry: the single online feature.
+// Client-side validation mirrors src/lib/enquiry.ts; the server re-runs
+// every rule. Photos read as base64 data URLs (≤3, ≤5MB each).
+
+const pieceTypes = [
+  'Ring', 'Engagement ring', 'Pendant', 'Earrings', 'Bracelet', 'Heirloom redesign', 'Other',
+];
+const metals = ['Solid gold', '925 sterling silver', 'Not sure — advise me'];
+const budgets = ['Under $500', '$500–$1,000', '$1,000–$3,000', '$3,000+', 'Not sure yet'];
+const contactPrefs = ['Email', 'Phone', 'Either'];
+---
+<section class="bg-accent-soft border border-line">
+  <div class="max-w-[720px] mx-auto px-6 py-10">
+    <div id="design-enquiry" class="flex flex-col gap-5">
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="q-name" class="block text-sm font-semibold mb-1.5">Name *</label>
+          <input id="q-name" name="name" type="text" required minlength="2"
+                 class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent" />
+          <p data-error-for="name" class="hidden mt-1 text-xs text-red-600"></p>
+        </div>
+        <div>
+          <label for="q-email" class="block text-sm font-semibold mb-1.5">Email *</label>
+          <input id="q-email" name="email" type="email" required
+                 class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent" />
+          <p data-error-for="email" class="hidden mt-1 text-xs text-red-600"></p>
+        </div>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="q-phone" class="block text-sm font-semibold mb-1.5">Phone <span class="font-normal text-muted">(optional)</span></label>
+          <input id="q-phone" name="phone" type="tel"
+                 class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent" />
+        </div>
+        <div>
+          <label for="q-budget" class="block text-sm font-semibold mb-1.5">Budget range <span class="font-normal text-muted">(optional)</span></label>
+          <select id="q-budget" name="budget"
+                  class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent">
+            <option value="">No preference</option>
+            {budgets.map((b) => <option value={b}>{b}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="q-piece" class="block text-sm font-semibold mb-1.5">Piece type *</label>
+        <select id="q-piece" name="pieceType" required
+                class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent">
+          <option value="" selected disabled>Select a piece type</option>
+          {pieceTypes.map((t) => <option value={t}>{t}</option>)}
+        </select>
+        <p data-error-for="pieceType" class="hidden mt-1 text-xs text-red-600"></p>
+      </div>
+
+      <div id="piece-other-wrap" class="hidden">
+        <label for="q-piece-other" class="block text-sm font-semibold mb-1.5">Tell us about your piece type</label>
+        <input id="q-piece-other" name="pieceTypeOther" type="text"
+               class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent" />
+        <p data-error-for="pieceTypeOther" class="hidden mt-1 text-xs text-red-600"></p>
+      </div>
+
+      <fieldset class="border border-line p-4">
+        <legend class="text-sm font-semibold px-1">Metals *</legend>
+        <div class="flex flex-col gap-2">
+          {metals.map((m) => (
+            <label class="flex items-center gap-2.5 text-sm">
+              <input type="checkbox" name="metals" value={m} class="accent-accent h-4 w-4" />
+              {m}
+            </label>
+          ))}
+        </div>
+        <p data-error-for="metals" class="hidden mt-2 text-xs text-red-600"></p>
+      </fieldset>
+
+      <div>
+        <label for="q-gemstones" class="block text-sm font-semibold mb-1.5">Gemstones / details <span class="font-normal text-muted">(optional)</span></label>
+        <input id="q-gemstones" name="gemstones" type="text"
+               class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+               placeholder="e.g. sapphire, diamond, pearl…" />
+      </div>
+
+      <div>
+        <label for="q-brief" class="block text-sm font-semibold mb-1.5">Your story / brief *</label>
+        <textarea id="q-brief" name="brief" rows="5" required minlength="40"
+                  class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+                  placeholder="Tell us what the piece is, who it's for, and anything that matters to it. Photos help — attach up to 3."></textarea>
+        <p class="mt-1 text-xs text-muted" id="brief-hint">Minimum 40 characters — the more you share, the better our first sketch.</p>
+        <p data-error-for="brief" class="hidden mt-1 text-xs text-red-600"></p>
+      </div>
+
+      <div>
+        <label for="q-photos" class="block text-sm font-semibold mb-1.5">Photos <span class="font-normal text-muted">(optional, up to 3)</span></label>
+        <input id="q-photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple
+               class="text-sm text-muted" />
+        <p data-error-for="photos" class="hidden mt-1 text-xs text-red-600"></p>
+      </div>
+
+      <div>
+        <label for="q-pref" class="block text-sm font-semibold mb-1.5">Preferred contact *</label>
+        <select id="q-pref" name="contactPref" required
+                class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent">
+          {contactPrefs.map((c) => <option value={c}>{c}</option>)}
+        </select>
+        <p data-error-for="contactPref" class="hidden mt-1 text-xs text-red-600"></p>
+      </div>
+
+      <div>
+        <label class="flex items-start gap-2.5 text-sm">
+          <input type="checkbox" name="consent" required class="accent-accent h-4 w-4 mt-0.5" />
+          <span>I agree to be contacted about this enquiry. *</span>
+        </label>
+        <p data-error-for="consent" class="hidden mt-1 text-xs text-red-600"></p>
+      </div>
+
+      <button id="q-submit" type="submit"
+              class="mt-1 bg-accent text-white px-7 py-3.5 text-sm font-semibold hover:bg-ink transition-colors">
+        Send my enquiry
+      </button>
+    </div>
+
+    <div id="enquiry-success" class="hidden py-8 text-center">
+      <p class="font-display text-2xl mb-3">Thank you</p>
+      <p id="enquiry-success-text" class="text-sm text-muted max-w-[46ch] mx-auto"></p>
+    </div>
+    <p id="enquiry-failure" class="hidden mt-4 text-sm text-red-700 max-w-[60ch] mx-auto"></p>
+  </div>
+</section>
+<script>
+  import { initDesignEnquiryForm } from '@/scripts/enquiry-form';
+  import { SITE } from '@/config';
+  initDesignEnquiryForm(SITE.email);
+</script>

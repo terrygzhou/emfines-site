@@ -1,0 +1,37 @@
+---
+
+import Base from '@/layouts/Base.astro';
+---
+export const prerender = true;
+<Base title="Jewellery repairs — EM Fine Studio" active="/repairs"
+      description="Stone replacements, prong work, chain repair, resizing, polishing and heirloom restoration. Treasured items handled with care.">
+  <section class="py-14">
+    <div class="mx-auto max-w-[720px] px-6">
+      <p class="text-xs tracking-[0.22em] uppercase text-accent mb-3">Repairs</p>
+      <h1 class="text-[34px] lg:text-[46px]">Bring your treasured piece back.</h1>
+    </div>
+  </section>
+
+  <section class="pb-14">
+    <div class="mx-auto max-w-[720px] px-6">
+      <h2 class="text-[26px] mb-5">What we fix</h2>
+      <ul class="grid sm:grid-cols-2 gap-x-8 gap-3 text-[15px]">
+        {['Stone replacements','Prong work','Soldering & brazing','Chain repair','Ring resizing','Polishing & restoring','Ring & bracelet repairs','Heirloom piece restoration'].map((item) => (
+          <li class="flex gap-3"><span class="text-accent font-display">—</span> {item}</li>
+        ))}
+      </ul>
+      <h2 class="text-[26px] mt-10 mb-4">The process</h2>
+      <ol class="flex flex-col gap-3 text-[15px] text-muted">
+        <li>Send photos and a description of what's wrong.</li>
+        <li>We quote, and you approve the cost before we start.</li>
+        <li>Your piece is repaired and returned.</li>
+      </ol>
+      <p class="mt-8 text-[15px] italic text-muted">Treasured items handled with care and attention to detail.</p>
+      <div class="mt-8">
+        <a href="/contact" class="inline-block bg-accent text-white px-7 py-3.5 text-sm font-semibold hover:bg-ink transition-colors">
+          Ask about a repair
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
