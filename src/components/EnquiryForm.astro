@@ -12,7 +12,7 @@ const contactPrefs = ['Email', 'Phone', 'Either'];
 ---
 <section class="bg-accent-soft border border-line">
   <div class="max-w-[720px] mx-auto px-6 py-10">
-    <div id="design-enquiry" class="flex flex-col gap-5">
+    <form id="design-enquiry" class="flex flex-col gap-5" novalidate>
       <div class="grid gap-5 sm:grid-cols-2">
         <div>
           <label for="q-name" class="block text-sm font-semibold mb-1.5">Name *</label>
@@ -118,7 +118,7 @@ const contactPrefs = ['Email', 'Phone', 'Either'];
               class="mt-1 bg-accent text-white px-7 py-3.5 text-sm font-semibold hover:bg-ink transition-colors">
         Send my enquiry
       </button>
-    </div>
+    </form>
 
     <div id="enquiry-success" class="hidden py-8 text-center">
       <p class="font-display text-2xl mb-3">Thank you</p>
