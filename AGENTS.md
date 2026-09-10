@@ -61,8 +61,8 @@ Run these in order; all must pass:
    `node --test` directly: `pretest` bundles `src/lib/enquiry.ts` and
    `src/lib/gallery.ts` with esbuild first.
 3. `npm run build` — full build; must succeed and regenerate `dist/`
-   (the checked-in `dist/` must stay in sync — commit it together with the
-   source change).
+   (`dist/` is a gitignored local build output — do NOT commit it; commit
+   the source change and ensure the build passes before deploy).
 4. Runtime smoke test (optional, prod-parity):
    ```bash
    npm run preview   # wrangler dev against dist/server (local KV + assets, email no-ops)
@@ -74,8 +74,9 @@ Run these in order; all must pass:
 
 ## Project notes
 
-- Never edit `dist/` by hand — it is generated. Edit source, rebuild, commit
-  both.
+- Never edit `dist/` by hand — it is generated (and gitignored). Edit source,
+  rebuild, and commit the source change (`dist/`, `public/assets/`, and
+  `src/generated/` are not committed).
 - `ENQUIRY_TO` / `ENQUIRY_FROM` are wrangler secrets (Cloudflare Email
   Service) — never commit them; set via `wrangler secret put`.
 - Enquiries land in KV namespace `emfines_enquiries` with a 30-day TTL per
