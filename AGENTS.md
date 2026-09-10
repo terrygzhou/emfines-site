@@ -1,6 +1,6 @@
 # AGENTS.md
 
-EM Fine Studio website — Astro 7 (`output: 'server'`, 5 prerendered pages + 1
+EM Fine Studio website — Astro 7 (`output: 'server'`, 6 prerendered pages + 1
 server endpoint `POST /api/enquiries`) on Cloudflare Workers, deployed via
 `wrangler` to the `emfines-site` worker (routes: emfinestudio.com). npm +
 `package-lock.json`.
