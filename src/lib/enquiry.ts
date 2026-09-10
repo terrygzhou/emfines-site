@@ -47,7 +47,7 @@ export const PIECE_TYPES = [
   'Other',
 ] as const;
 
-export const METALS = ['Solid gold', '925 sterling silver', 'Not sure — advise me'] as const;
+export const METALS = ['Fine gold', '9K gold', '14K gold', '18K gold', '925 sterling silver', 'Selected metal alloys', 'Not sure — advise me'] as const;
 
 export const BUDGETS = ['Under $500', '$500–$1,000', '$1,000–$3,000', '$3,000+', 'Not sure yet'] as const;
 

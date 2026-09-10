@@ -17,7 +17,7 @@ function validDesign(overrides = {}) {
     name: 'Jane Smith',
     email: 'jane@example.com',
     pieceType: 'Ring',
-    metals: ['Solid gold'],
+    metals: ['Fine gold'],
     brief: 'An engagement ring for our tenth anniversary — something simple with a small stone.',
     contactPref: 'Email',
     consent: true,
@@ -48,7 +48,7 @@ test('"Other" piece type requires detail', () => {
 test('metals must be ≥1 and known', () => {
   assert.equal(validatePayload(validDesign({ metals: [] }), 'design').ok, false);
   assert.equal(validatePayload(validDesign({ metals: ['Tungsten'] }), 'design').ok, false);
-  assert.equal(validatePayload(validDesign({ metals: ['925 sterling silver', 'Solid gold'] }), 'design').ok, true);
+  assert.equal(validatePayload(validDesign({ metals: ['925 sterling silver', 'Fine gold'] }), 'design').ok, true);
 });
 
 test('brief min 40 chars enforced', () => {
@@ -100,7 +100,7 @@ test('email body is one line per field, in order', () => {
   assert.ok(lines[0].startsWith('Name: Jane Smith'));
   assert.ok(lines[1].startsWith('Email: jane@example.com'));
   assert.ok(lines.includes('Piece type: Ring'));
-  assert.ok(lines.includes('Metals: Solid gold'));
+  assert.ok(lines.includes('Metals: Fine gold'));
   assert.ok(lines.includes('Gemstones / details: sapphire'));
   assert.ok(lines.includes('Budget: Under $500'));
   assert.ok(lines.includes('Brief:'));

@@ -201,7 +201,7 @@ async function main() {
     await page.fill('#q-name', 'Jane Tester');
     await page.fill('#q-email', 'jane@example.com');
     await page.selectOption('#q-piece', 'Ring');
-    await page.check('input[name="metals"][value="Solid gold"]');
+    await page.check('input[name="metals"][value="Fine gold"]');
     await page.fill('#q-brief', 'At least forty characters of brief here, yes, it continues.');
     await page.selectOption('#q-pref', 'Email');
     await page.check('input[name="consent"]');
