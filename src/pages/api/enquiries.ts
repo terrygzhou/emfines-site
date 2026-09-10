@@ -77,7 +77,8 @@ async function sendEnquiryEmail(q: Enquiry): Promise<boolean> {
     }
     await mail.send();
     return true;
-  } catch {
+  } catch (err) {
+    console.error('[enquiry] email send failed', err);
     return false;
   }
 }
