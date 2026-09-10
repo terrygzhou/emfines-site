@@ -81,7 +81,7 @@ async function sendViaBrevo(q: Enquiry, to: string, apiKey: string): Promise<boo
       (p) => ({ filename: p.filename, content: p.data, mimeType: p.type }),
     );
   }
-  const res = await fetch('https://api.brevo.com/v3/transactional/emails', {
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: { 'api-key': apiKey, 'Content-Type': 'application/json', accept: 'application/json' },
     body: JSON.stringify(payload),
