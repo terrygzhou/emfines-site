@@ -47,15 +47,62 @@ async function storeEnquiry(q: Enquiry): Promise<void> {
 }
 
 /**
- * Send via Cloudflare Email Service (free tier, 10k emails/mo) using node:mail.
- * node:mail is a Cloudflare-runtime module; it is imported lazily so a runtime
- * without it degrades to archive-only (emailDelivered: false) instead of failing
- * to load the worker chunk. Returns false (never throws) when unconfigured or
- * on failure — the brief is already durably in KV, so nothing is lost.
+ * Send the enquiry email. Primary path: Brevo API (free tier: 300 emails/day,
+ * no monthly cap) — enabled by setting the BREVO_API_KEY worker secret.
+ * Fallback: Cloudflare Email Service via node:mail (requires a Workers Paid
+ * account; on free plans the lazy import fails and we degrade to
+ * archive-only). Either way: returns false (never throws) when unconfigured
+ * or on failure — the brief is already durably in KV, so nothing is lost.
  */
+function escapeHtml(text: string): string {
+  return text
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+}
+
+async function sendViaBrevo(q: Enquiry, to: string, apiKey: string): Promise<boolean> {
+  const bodyText = emailBody(q);
+  const payload: Record<string, unknown> = {
+    sender: {
+      name: 'EM Fine Studio',
+      // BREVO_FROM lets us send from a verified domain (e.g. after adding the
+      // SPF/DKIM records for emfinestudio.com in Brevo); falls back to
+      // ENQUIRY_FROM, which Brevo rejects until that domain/sender is verified.
+      email: env.BREVO_FROM ?? env.ENQUIRY_FROM ?? 'emfines-site.terry-g-zhou.workers.dev',
+    },
+    to: [{ email: to }],
+    subject: emailSubject(q),
+    textContent: bodyText,
+    html: `<pre style="font-family:monospace;white-space:pre-wrap;">${escapeHtml(bodyText)}</pre>`,
+  };
+  if (q.kind === 'design' && q.photos.length > 0) {
+    payload.attachments = q.photos.map(
+      (p) => ({ filename: p.filename, content: p.data, mimeType: p.type }),
+    );
+  }
+  const res = await fetch('https://api.brevo.com/v3/smtp/emails', {
+    method: 'POST',
+    headers: { 'api-key': apiKey, 'Content-Type': 'application/json', accept: 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    throw new Error(`Brevo API ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  }
+  return true;
+}
+
 async function sendEnquiryEmail(q: Enquiry): Promise<boolean> {
   const to = env.ENQUIRY_TO;
   if (!to) return false; // not configured yet (OQ-1) — archive-only mode
+  if (env.BREVO_API_KEY) {
+    try {
+      return await sendViaBrevo(q, to, env.BREVO_API_KEY);
+    } catch (err) {
+      console.error('[enquiry] brevo send failed', err);
+      return false;
+    }
+  }
   try {
     const { Mail, Attachment } = await import('node:mail');
     const mail = new Mail({

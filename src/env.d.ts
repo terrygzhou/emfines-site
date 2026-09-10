@@ -15,4 +15,8 @@ export interface EnquiryBindings {
   ENQUIRY_TO?: string;
   /** Verified Cloudflare Email Service sender route; defaults to the worker's .workers.dev hostname. */
   ENQUIRY_FROM?: string;
+  /** Brevo API key (free tier: 300 emails/day). When set, enquiries are sent via the Brevo API. */
+  BREVO_API_KEY?: string;
+  /** Verified Brevo sender address (e.g. a Brevo shared address, or your domain after adding its SPF/DKIM records). */
+  BREVO_FROM?: string;
 }
