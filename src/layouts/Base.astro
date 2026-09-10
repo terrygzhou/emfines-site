@@ -8,10 +8,52 @@ interface Props {
   title: string;
   description?: string;
   active?: string;
+  // Optional per-page Open Graph image override (defaults to the studio logo).
+  ogImage?: string;
+  ogImageAlt?: string;
 }
-const { title, description = `${SITE.name} — Australian jewellery design studio`, active } = Astro.props;
+const {
+  title,
+  description = `${SITE.name} — Australian jewellery design studio`,
+  active,
+  ogImage,
+  ogImageAlt,
+} = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
+
+// Open Graph / social card image — default to the studio logo (1254×1254).
+// A purpose-built 1200×630 brand card is a follow-up asset; the logo is the
+// only brand image on hand today.
+const defaultOgImage = new URL('/assets/logo.png', Astro.site).href;
+const socialImage = ogImage ?? defaultOgImage;
+const socialImageAlt = ogImageAlt ?? `${SITE.name} — Australian jewellery design studio`;
+
+// JSON-LD structured data (schema.org) so Google can show a rich knowledge
+// panel. Accurate only — name / url / logo / email / tagline, all owner-sourced
+// from config. A LocalBusiness + Google Business Profile is a separate owner
+// effort (needs a verified street address + phone) and is out of scope here.
+const homeUrl = new URL('/', Astro.site).href;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${homeUrl}#organization`,
+      name: SITE.name,
+      url: homeUrl,
+      logo: new URL('/assets/logo.png', Astro.site).href,
+      email: SITE.email,
+      description: SITE.tagline,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${homeUrl}#website`,
+      name: SITE.name,
+      url: homeUrl,
+    },
+  ],
+};
 ---
 <!doctype html>
 <html lang="en">
@@ -20,12 +62,26 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#1e4d8c" />
     <link rel="canonical" href={canonical} />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💍</text></svg>" />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💍</text></svg>" />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1254" />
+    <meta property="og:image:height" content="1254" />
+    <meta property="og:image:alt" content={socialImageAlt} />
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <!-- Structured data (JSON-LD) -->
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
   </head>
   <body>
     <Header active={active} />

@@ -11,7 +11,7 @@ import tailwindcss from '@tailwindcss/vite';
 // KV bindings; `main`/`assets` are managed by the adapter — do not set them
 // here or in the root config (a build-time `main` hijacks the worker entry).
 export default defineConfig({
-  site: 'https://emfines-site.terry-g-zhou.workers.dev',
+  site: 'https://emfinestudio.com',
   output: 'server',
   adapter: cloudflare({
     // Serve original images from /assets verbatim — no image pipeline (plan §Images).

@@ -1,0 +1,8 @@
+# EM Fine Studio — crawl policy
+# Canonical host for Google: emfinestudio.com (apex). Allow crawling of all
+# public pages; keep the internal API off the index.
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://emfinestudio.com/sitemap.xml
