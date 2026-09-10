@@ -5,7 +5,7 @@ import { SITE } from '@/config';
 export const prerender = true;
 ---
 <Base title="EM Fine Studio — Australian Jewellery Design Studio">
-  <!-- 1. Hero (T1 spec §3/§5 — solid, typographic; photo swap is a later iteration) -->
+  <!-- 1. Hero (T1 spec §3/§5 — solid, typographic; owner studio photo now in the slot) -->
   <section class="bg-accent-soft">
     <div class="grid lg:grid-cols-[1.1fr_0.9fr]">
       <div class="px-6 py-16 lg:py-20 lg:px-12 flex flex-col justify-center gap-5">
@@ -20,8 +20,17 @@ export const prerender = true;
           </a>
         </div>
       </div>
-      <div class="ph min-h-[320px] lg:min-h-[480px]" aria-hidden="true">
-        <span>Studio image slot</span>
+      <div class="min-h-[320px] lg:min-h-[480px] overflow-hidden">
+        <img
+          src="/assets/studio-img-1.png"
+          alt="Inside the EM Fine Studio workshop"
+          width="1374"
+          height="1145"
+          class="product-photo"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
       </div>
     </div>
   </section>
