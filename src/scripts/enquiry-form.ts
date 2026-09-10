@@ -1,6 +1,7 @@
 // T1 spec §4 — custom design enquiry form behaviour.
 // Client-side validation mirrors src/lib/enquiry.ts; the server re-runs
 // every rule. Photos read as base64 data URLs (≤3, ≤5 MB each).
+import { trackConversion } from '@/lib/analytics';
 
 export function initDesignEnquiryForm(siteEmail: string): void {
   const form = document.getElementById('design-enquiry') as HTMLFormElement | null;
@@ -81,6 +82,8 @@ export function initDesignEnquiryForm(siteEmail: string): void {
       if (!res.ok) throw new Error(`status ${res.status}`);
       const data = (await res.json()) as { ok: boolean; emailDelivered: boolean };
       if (!data.ok) throw new Error('server rejected enquiry');
+      // Enquiry durably stored → record the conversion for analytics (no-op-safe).
+      trackConversion('design_enquiry_submitted', { kind: 'design', emailDelivered: data.emailDelivered });
       if (data.emailDelivered) {
         form.classList.add('hidden');
         successText.textContent = `Thanks, ${String(payload.name).split(' ')[0]}. Your enquiry is in — we'll reply to ${payload.email} within 2 business days.`;

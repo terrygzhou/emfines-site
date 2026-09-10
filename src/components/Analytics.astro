@@ -1,0 +1,21 @@
+---
+// Web analytics (EMF-24). Renders the Umami + PostHog embed scripts, but only
+// for providers that are actually configured in `ANALYTICS` (enabled + real key).
+// With the default placeholder config, nothing is emitted — the build stays
+// clean and no third-party pings happen until the owner enables a provider.
+import { ANALYTICS } from '@/config';
+import { umamiScriptTag, postHogScriptTag } from '@/lib/analytics';
+
+const umami = umamiScriptTag(ANALYTICS.umami);
+const posthog = postHogScriptTag(ANALYTICS.posthog);
+---
+{
+  umami && (
+    <script is:inline set:html={umami} />
+  )
+}
+{
+  posthog && (
+    <script is:inline set:html={posthog} />
+  )
+}

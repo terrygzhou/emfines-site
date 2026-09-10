@@ -1,5 +1,6 @@
 // Contact form behaviour (spec §5 /contact) — same /api/enquiries endpoint
 // with kind:'contact'; the server re-validates every rule.
+import { trackConversion } from '@/lib/analytics';
 
 export function initContactForm(siteEmail: string): void {
   const form = document.getElementById('contact-form') as HTMLFormElement | null;
@@ -29,6 +30,8 @@ export function initContactForm(siteEmail: string): void {
       });
       if (!res.ok) throw new Error(`status ${res.status}`);
       form.reset();
+      // Message durably stored → record the conversion for analytics (no-op-safe).
+      trackConversion('contact_enquiry_submitted', { kind: 'contact' });
       status.textContent = `Thanks, ${payload.name.split(' ')[0]} — your message is in. We'll reply within 2 business days.`;
       status.className = 'text-sm text-muted';
     } catch {
