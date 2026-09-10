@@ -70,52 +70,103 @@ test('configured posthog emits static.js loader + deferred init', () => {
     enabled: true,
     apiKey: 'phc_4r2xT1yZ9aBcDeFg',
     host: 'https://eu.posthog.com',
+    capturePageview: true,
     capturePageLeave: false,
   });
   assert.match(t, /defer src="https:\/\/cdn\.posthog\.com\/static\.js"/);
   assert.match(t, /window\.ph\.init\(/);
   assert.match(t, /"phc_4r2xT1yZ9aBcDeFg"/);
   assert.match(t, /"https:\/\/eu\.posthog\.com"/);
+  assert.match(t, /capturePageview: true/);
   assert.match(t, /capturePageLeave: false/);
+});
+
+test('posthog defaults to events-only so it does not duplicate Umami pageviews', () => {
+  // When both providers are active, Umami owns pageviews; PostHog must NOT
+  // also capture pageviews / page-leaves, or the same engagement is counted twice.
+  const t = postHogScriptTag({ enabled: true, apiKey: 'phc_real', host: 'https://posthog.example.com' });
+  assert.match(t, /capturePageview: false/);
+  assert.match(t, /capturePageLeave: false/);
+  assert.match(t, /"https:\/\/posthog\.example\.com"/);
+});
+
+test('posthog pageview capture can be re-enabled for a PostHog-only deployment', () => {
+  const t = postHogScriptTag({ enabled: true, apiKey: 'phc_real', host: '', capturePageview: true });
   assert.match(t, /capturePageview: true/);
 });
 
-test('posthog captures page-leave by default', () => {
-  const t = postHogScriptTag({ enabled: true, apiKey: 'phc_real', host: '' });
-  assert.match(t, /capturePageLeave: true/);
-  assert.match(t, /"https:\/\/us\.posthog\.com"/); // default US host
-});
-
 // --- trackConversion -----------------------------------------------------
-test('trackConversion is no-op-safe when no SDK is present', () => {
-  // No globalThis.umami / .ph in the test env → must not throw.
-  assert.doesNotThrow(() => trackConversion('design_enquiry_submitted', { kind: 'design' }));
+// Feature split: PostHog owns conversion events, Umami owns pageviews. A
+// conversion is captured by AT MOST ONE provider (PostHog preferred, Umami as
+// the fallback for a Umami-only deployment) \u2014 never both \u2014 so enabling both
+// does not double-count the same signals.
+function snapGlobals() {
+  return {
+    umami: 'umami' in globalThis ? globalThis.umami : undefined,
+    ph: 'ph' in globalThis ? globalThis.ph : undefined,
+  };
+}
+function setGlobals(g) {
+  delete globalThis.umami;
+  delete globalThis.ph;
+  if (g.umami) globalThis.umami = g.umami;
+  if (g.ph) globalThis.ph = g.ph;
+}
+function restoreGlobals(s) {
+  delete globalThis.umami;
+  delete globalThis.ph;
+  if (s.umami !== undefined) globalThis.umami = s.umami;
+  if (s.ph !== undefined) globalThis.ph = s.ph;
+}
+
+test('trackConversion is a safe no-op when no SDK is present', () => {
+  const s = snapGlobals();
+  setGlobals({});
+  try {
+    assert.doesNotThrow(() => trackConversion('design_enquiry_submitted', { kind: 'design' }));
+  } finally {
+    restoreGlobals(s);
+  }
 });
 
-test('trackConversion forwards to umami.track when present', () => {
+test('PostHog absent + Umami present \u2192 conversion falls back to Umami', () => {
+  const s = snapGlobals();
   const calls = [];
-  const prevUmami = globalThis.umami;
-  globalThis.umami = { track: (ev, p) => calls.push(['umami', ev, p]) };
+  setGlobals({ umami: { track: (ev, p) => calls.push(['umami', ev, p]) } });
   try {
     trackConversion('contact_enquiry_submitted', { kind: 'contact' });
+    assert.deepEqual(calls, [['umami', 'contact_enquiry_submitted', { kind: 'contact' }]]);
   } finally {
-    if (prevUmami === undefined) delete globalThis.umami;
-    else globalThis.umami = prevUmami;
+    restoreGlobals(s);
   }
-  assert.deepEqual(calls, [['umami', 'contact_enquiry_submitted', { kind: 'contact' }]]);
 });
 
-test('trackConversion forwards to ph.capture when present', () => {
+test('Umami absent + PostHog present \u2192 conversion goes to PostHog', () => {
+  const s = snapGlobals();
   const calls = [];
-  const prevPh = globalThis.ph;
-  globalThis.ph = { capture: (ev, p) => calls.push(['ph', ev, p]) };
+  setGlobals({ ph: { capture: (ev, p) => calls.push(['ph', ev, p]) } });
   try {
     trackConversion('design_enquiry_submitted');
+    assert.deepEqual(calls, [['ph', 'design_enquiry_submitted', undefined]]);
   } finally {
-    if (prevPh === undefined) delete globalThis.ph;
-    else globalThis.ph = prevPh;
+    restoreGlobals(s);
   }
-  assert.deepEqual(calls, [['ph', 'design_enquiry_submitted', undefined]]);
+});
+
+test('both SDKs present \u2192 conversion fires to PostHog ONLY (never duplicated)', () => {
+  const s = snapGlobals();
+  const calls = [];
+  setGlobals({
+    umami: { track: (ev, p) => calls.push(['umami', ev, p]) },
+    ph: { capture: (ev, p) => calls.push(['ph', ev, p]) },
+  });
+  try {
+    trackConversion('design_enquiry_submitted', { kind: 'design' });
+    assert.deepEqual(calls, [['ph', 'design_enquiry_submitted', { kind: 'design' }]]);
+    assert.ok(!calls.some((c) => c[0] === 'umami'), 'must not also fire to Umami when PostHog is active');
+  } finally {
+    restoreGlobals(s);
+  }
 });
 
 // --- anyAnalyticsActive --------------------------------------------------

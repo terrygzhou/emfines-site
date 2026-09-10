@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:lan": "POSTHOG_LAN=1 astro build",
     "preview": "wrangler dev --config dist/server/wrangler.json",
     "check": "astro check",
     "test": "node --test tests/*.test.mjs",

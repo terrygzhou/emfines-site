@@ -29,7 +29,13 @@ export interface PostHogAnalytics {
   apiKey: string;
   /** US default; use `https://eu.posthog.com` for EU data residency. */
   host: string;
-  /** Also capture page-leave events (default true). */
+  /**
+   * PostHog's role here is *conversion/event* capture. Pageviews are owned by
+   * Umami, so pageview capture defaults OFF to avoid double-counting the same
+   * engagement. A PostHog-only deployment can set this to true.
+   */
+  capturePageview?: boolean;
+  /** Page-leave pings are page engagement too — owned by Umami — so default OFF. */
   capturePageLeave?: boolean;
 }
 
@@ -67,7 +73,10 @@ export function umamiScriptTag(cfg: UmamiAnalytics | undefined): string | null {
 export function postHogScriptTag(cfg: PostHogAnalytics | undefined): string | null {
   if (!cfg?.enabled || !isConfigured(cfg.apiKey)) return null;
   const host = (cfg.host || 'https://us.posthog.com').replace(/\/+$/, '');
-  const capturePageLeave = cfg.capturePageLeave ?? true;
+  // Events-only by default: Umami owns pageviews, so PostHog does not capture
+  // them (or page-leaves) — otherwise enabling both double-counts engagement.
+  const capturePageview = cfg.capturePageview ?? false;
+  const capturePageLeave = cfg.capturePageLeave ?? false;
   return [
     `<script defer src="https://cdn.posthog.com/static.js"></script>`,
     `<script>`,
@@ -76,7 +85,7 @@ export function postHogScriptTag(cfg: PostHogAnalytics | undefined): string | nu
     `    window.ph.init({`,
     `      apiKey: ${JSON.stringify(cfg.apiKey.trim())},`,
     `      apiHost: ${JSON.stringify(host)},`,
-    `      capturePageview: true,`,
+    `      capturePageview: ${capturePageview},`,
     `      capturePageLeave: ${capturePageLeave},`,
     `    });`,
     `  });`,
@@ -85,17 +94,22 @@ export function postHogScriptTag(cfg: PostHogAnalytics | undefined): string | nu
 }
 
 /**
- * Fire a conversion event on whichever providers are active. No-op-safe:
- * each call is optional-chained, so a missing/late SDK (or a provider that
- * isn't configured) never throws. Call from form success handlers.
+ * Fire a conversion event on exactly ONE provider so enabling both Umami and
+ * PostHog never double-counts a conversion. PostHog is the event tool and the
+ * preferred owner; Umami is the fallback only when no PostHog SDK is present
+ * (a Umami-only deployment). No-op-safe: never throws when the SDK is absent
+ * or late. Call from form success handlers.
  */
 export function trackConversion(event: string, properties?: Record<string, unknown>): void {
   const g = globalThis as unknown as {
     umami?: { track?: (ev: string, p?: Record<string, unknown>) => void };
     ph?: { capture?: (ev: string, p?: Record<string, unknown>) => void };
   };
-  g.umami?.track?.(event, properties);
-  g.ph?.capture?.(event, properties);
+  if (typeof g.ph?.capture === 'function') {
+    g.ph!.capture!(event, properties);
+    return; // single-owner: never also fire to Umami (no duplication)
+  }
+  g.umami?.track?.(event, properties); // fallback for a Umami-only deployment
 }
 
 /** Whether at least one provider would actually emit (used for guardrails). */

@@ -19,5 +19,19 @@ export default defineConfig({
   }),
   vite: {
     plugins: [tailwindcss()],
+    // Web analytics (EMF-24) — build-time flavor. The self-hosted PostHog box
+    // (posthog.local) is reachable only on the owner's LAN, so PostHog is
+    // enabled ONLY in LAN builds. We compute the flavor here (astro.config runs
+    // in real Node with the real process.env) and bake it into every bundle as
+    // a Vite `define` literal, so the compiled config.ts always sees a
+    // deterministic value — no reliance on process.env surviving Vite's
+    // client/SSR env shims (which would otherwise always read `{}`).
+    //   public (default): npm run build            -> __POSTHOG_LAN__ = false
+    //   LAN / local:      POSTHOG_LAN=1 npm run build -> __POSTHOG_LAN__ = true
+    define: {
+      __POSTHOG_LAN__: JSON.stringify(
+        process.env.POSTHOG_LAN === '1' || process.env.POSTHOG_LAN === 'true',
+      ),
+    },
   },
 });
