@@ -46,8 +46,17 @@ export const ANALYTICS: { umami: UmamiAnalytics; posthog: PostHogAnalytics } = {
     enabled: true,
     // Website ID for emfinestudio.com in the local Umami (created 2026-09-10).
     websiteId: '0995457f-98e2-45dc-ae74-c7011543bdee',
-    // Public base URL of the self-hosted Umami server (no trailing slash).
-    host: 'https://umami.eywalink.org',
+    // Umami server base URL (no trailing slash). The embed script is fetched
+    // from `${host}/script.js` by the visitor's browser, so it MUST be reachable
+    // from where the page is viewed:
+    //   public build (default)  -> the Cloudflare tunnel (HTTPS + internet-
+    //       reachable). A plain `http://` LAN URL would be (a) blocked as mixed
+    //       content on the HTTPS production page and (b) unresolvable off-LAN,
+    //       silently killing analytics for real visitors.
+    //   LAN build (POSTHOG_LAN=1) -> the local Umami on the office box directly.
+    //       LAN viewing is http-only, so no mixed-content issue, and `pop-os`
+    //       resolves on the office network.
+    host: posthogLan ? 'http://pop-os:3102' : 'https://umami.eywalink.org',
   },
   posthog: {
     // LAN-ONLY: enabled only for `POSTHOG_LAN=1` builds (see gate above). The
