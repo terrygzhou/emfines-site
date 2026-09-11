@@ -16,7 +16,8 @@ export const SITE = {
 //
 // Feature split so enabling BOTH never duplicates a signal:
 //   Umami   -> cookieless pageviews (its strength, DNT-friendly) AND public conversions.
-//   PostHog -> conversion events ONLY, and only in the LAN build (pageview capture off).
+//   PostHog -> conversion events + pageviews in the LAN build (local dashboard =
+//               complete local web-analytics view); public builds ship no PostHog tag.
 //
 // Build-time gate (LAN-only PostHog):
 //   The self-hosted PostHog instance lives at posthog.local on the owner's LAN
@@ -76,9 +77,12 @@ export const ANALYTICS: { umami: UmamiAnalytics; posthog: PostHogAnalytics } = {
     apiKey: 'phc_kimpZemZ3utpyBgUeze8VYH2GL3gZL2UG6xVr28WWxJA',
     // Base URL of the self-hosted PostHog instance (LAN only).
     host: 'https://posthog.local',
-    // Events-only: pageviews are Umami's job -> do not double-count the same
-    // engagement. (In a LAN build, Umami keeps pageviews; PostHog keeps conversions.)
-    capturePageview: false,
+    // LAN flavor: pageviews ON, so the owner's local PostHog dashboard is a
+    // complete local web-analytics view (pageviews + events). Public builds
+    // ship no PostHog tag at all (enabled=false), so no public duplication.
+    // Umami still records pageviews in both flavors for the shared funnels —
+    // operators read one dashboard per signal, never both.
+    capturePageview: posthogLan,
     capturePageLeave: false,
   },
 };

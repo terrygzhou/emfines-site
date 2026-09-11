@@ -83,16 +83,25 @@ and its success state shown to the visitor (constitution V).
 - **THEN** the call is a safe no-op, the enquiry is still stored, and the
   visitor still sees the success message
 ### Requirement: Analytics features are not duplicated across providers
-When both Umami and PostHog are enabled, each signal SHALL have a single owner so
-the same engagement is not counted in two dashboards: pageview analytics SHALL be
-owned by Umami (PostHog pageview / page-leave capture SHALL be off), and a
-conversion event SHALL be fired to a single provider (PostHog preferred, Umami as
-the fallback only in a Umami-only deployment). A conversion event SHALL NOT be
-captured by both providers.
-#### Scenario: Both active, no double-counted pageviews
-- **WHEN** Umami and PostHog are both enabled
+In the public build, when both Umami and PostHog are enabled, each signal SHALL
+have a single owner so the same engagement is not counted in two dashboards:
+pageview analytics SHALL be owned by Umami (PostHog pageview / page-leave
+capture SHALL be off), and a conversion event SHALL be fired to a single
+provider (PostHog preferred, Umami as the fallback only in a Umami-only
+deployment). A conversion event SHALL NOT be captured by both providers.
+The LAN/local flavor is the documented exception: the owner's local PostHog
+dashboard is the complete local web-analytics view, so PostHog SHALL capture
+pageviews there (page-leave capture SHALL remain off); Umami's pageviews keep
+feeding the shared cross-site funnels, and operators SHALL read one dashboard
+per signal rather than compare raw totals across dashboards.
+#### Scenario: Public build active, no double-counted pageviews
+- **WHEN** Umami and PostHog are both enabled in the public build
 - **THEN** pageviews are recorded only by Umami and PostHog captures no pageview
   or page-leave events
+#### Scenario: LAN build gives PostHog a complete local view
+- **WHEN** the site is built for the LAN/local flavor with both providers active
+- **THEN** PostHog captures pageviews in addition to its conversion events, and
+  page-leave capture stays off
 #### Scenario: Conversion captured by one provider only
 - **WHEN** both providers are active and an enquiry is durably stored
 - **THEN** the conversion event is fired to PostHog only and is NOT also fired to Umami
@@ -105,14 +114,15 @@ The self-hosted PostHog instance is reachable only on the owner's LAN, so the
 default/public build SHALL NOT emit any PostHog embed (no public visitor pings
 an unreachable host; Umami owns all public signals). PostHog SHALL be emitted
 only in an explicitly-requested LAN/local build. Umami SHALL remain active in
-both flavors so pageviews are always captured, and in the LAN flavor PostHog
-SHALL keep pageview / page-leave capture off so it does not duplicate Umami's
-pageviews.
+both flavors so pageviews are always captured; in the LAN flavor PostHog SHALL
+capture pageviews so the owner's local PostHog dashboard is a complete local
+web-analytics view, while page-leave capture SHALL remain off in every flavor.
 #### Scenario: Public build emits no PostHog
 - **WHEN** the site is built for the public deployment (no LAN flag)
 - **THEN** no PostHog embed / `ph.init` is present in any page, and the Umami
   embed is still present
 #### Scenario: LAN build emits both providers
 - **WHEN** the site is built for the LAN/local flavor
-- **THEN** every page contains both the Umami and the PostHog embed, and PostHog
-  captures no pageview or page-leave (no duplication)
+- **THEN** every page contains both the Umami and the PostHog embed, and
+  PostHog captures pageviews (capturePageview: true) plus its conversion
+  events; page-leave capture stays off

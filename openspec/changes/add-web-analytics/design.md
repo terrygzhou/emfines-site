@@ -66,6 +66,15 @@ capture, or any permanent analytics DB (constitution I/II).
     and a `POSTHOG_LAN=1` build did NOT emit the embed. Baking the value in
     `astro.config.mjs` via `define` is deterministic.
 
+- **LAN flavor: PostHog also captures pageviews** (2026-09-11 amendment): the
+  owner's local PostHog dashboard is the complete local web-analytics view, so
+  `capturePageview` is flavored (`posthogLan` — true in `build:lan`; the public
+  build ships no PostHog tag at all). The "no duplication" rule is scoped to
+  the public build; locally, pageviews land in both dashboards by design
+  (Umami keeps feeding the shared cross-site funnels) — operators read one
+  dashboard per signal and never compare raw totals. Page-leave capture stays
+  off in every flavor.
+
 ## Risks / Trade-offs
 - [Self-hosted instances go down / misconfigured] → analytics is optional and
   no-op-safe; the site + durable enquiry path are unaffected (V).
