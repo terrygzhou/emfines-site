@@ -10,7 +10,7 @@
     "preview": "wrangler dev --config dist/server/wrangler.json",
     "check": "astro check",
     "test": "node --test tests/*.test.mjs",
-    "deploy": "npm run build && wrangler deploy --config dist/server/wrangler.json",
+    "deploy": "npm run build && node scripts/guard-deploy-assets.mjs && wrangler deploy --config dist/server/wrangler.json",
     "pretest": "esbuild src/lib/enquiry.ts --bundle --format=esm --outfile=node_modules/.cache/enquiry.mjs --log-level=error && esbuild src/lib/gallery.ts --bundle --format=esm --outfile=node_modules/.cache/gallery.mjs --log-level=error && esbuild src/lib/analytics.ts --bundle --format=esm --outfile=node_modules/.cache/analytics.mjs --log-level=error",
     "prebuild": "esbuild src/lib/gallery.ts --bundle --format=esm --outfile=node_modules/.cache/gallery.mjs --log-level=error && node scripts/generate-manifest.mjs",
     "predev": "esbuild src/lib/gallery.ts --bundle --format=esm --outfile=node_modules/.cache/gallery.mjs --log-level=error && node scripts/generate-manifest.mjs"
