@@ -57,6 +57,12 @@ export const ANALYTICS: { umami: UmamiAnalytics; posthog: PostHogAnalytics } = {
     //       LAN viewing is http-only, so no mixed-content issue, and `pop-os`
     //       resolves on the office network.
     host: posthogLan ? 'http://pop-os:3102' : 'https://umami.eywalink.org',
+    // Subresource-Integrity pin for `${host}/script.js` (harden-site-security). Computed
+    // with `node scripts/umami-integrity.mjs` (public host, 2026-09-11). Until set to a
+    // real value the embed is suppressed (never ship an un-pinned script). Recompute on
+    // every Umami upgrade; for the LAN build recompute with UMAMI_HOST=http://pop-os:3102
+    // if that host serves a different script.
+    integrity: 'sha384-FeSgFWhRpNmUWqmtRLZpDSRTuxgovbVqlyM0OaJpq2IanhF2u3xjYziXsyXR9Kg/',
   },
   posthog: {
     // LAN-ONLY: enabled only for `POSTHOG_LAN=1` builds (see gate above). The

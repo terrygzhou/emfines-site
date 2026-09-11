@@ -44,6 +44,7 @@ test('configured umami emits a deferred embed with do-not-track', () => {
     enabled: true,
     websiteId: '  2f0c1e9a ',
     host: 'https://analytics.example.com/',
+    integrity: 'sha384-AbCdEf0123',
   });
   assert.match(t, /<script defer src="https:\/\/analytics.example.com\/script\.js"/);
   assert.match(t, /data-website-id="2f0c1e9a"/); // trimmed
@@ -51,8 +52,39 @@ test('configured umami emits a deferred embed with do-not-track', () => {
 });
 
 test('umami defaults to cloud host when host is empty', () => {
-  const t = umamiScriptTag({ enabled: true, websiteId: 'abc', host: '' });
+  const t = umamiScriptTag({ enabled: true, websiteId: 'abc', host: '', integrity: 'sha384-AbCdEf0123' });
   assert.match(t, /https:\/\/cloud\.umami\.is\/script\.js/);
+});
+
+// --- umami subresource integrity (harden-site-security) -----------------
+test('umami embed carries SRI attributes when integrity is configured', () => {
+  const t = umamiScriptTag({
+    enabled: true,
+    websiteId: '2f0c1e9a',
+    host: 'https://analytics.example.com',
+    integrity: 'sha384-AbCdEf0123',
+  });
+  assert.match(t, /integrity="sha384-AbCdEf0123"/);
+  assert.match(t, /crossorigin="anonymous"/);
+  // SRI requires the crossorigin attribute to be present for the check to apply.
+  assert.match(t, /crossorigin="anonymous"/);
+});
+
+test('missing integrity suppresses the umami embed (no unverified script)', () => {
+  // enabled + real websiteId, but no SRI hash -> we do NOT ship the script.
+  assert.equal(umamiScriptTag({ enabled: true, websiteId: 'abc', host: 'h' }), null);
+});
+
+test('placeholder integrity suppresses the umami embed', () => {
+  assert.equal(
+    umamiScriptTag({
+      enabled: true,
+      websiteId: 'abc',
+      host: 'h',
+      integrity: 'YOUR_UMAMI_INTEGRITY',
+    }),
+    null,
+  );
 });
 
 // --- postHogScriptTag ----------------------------------------------------
@@ -180,7 +212,7 @@ test('anyAnalyticsActive reflects enabled providers only', () => {
   );
   assert.equal(
     anyAnalyticsActive({
-      umami: { enabled: true, websiteId: 'abc', host: 'h' },
+      umami: { enabled: true, websiteId: 'abc', host: 'h', integrity: 'sha384-AbCdEf0123' },
     }),
     true,
   );

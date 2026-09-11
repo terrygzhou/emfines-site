@@ -25,7 +25,7 @@ export const prerender = true;
         <div class="grid gap-5 sm:grid-cols-2">
           <div>
             <label for="c-name" class="block text-sm font-semibold mb-1.5">Name *</label>
-            <input id="c-name" name="name" type="text" required minlength="2"
+            <input id="c-name" name="name" type="text" required minlength="2" maxlength="100"
                    class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent" />
           </div>
           <div>
@@ -43,7 +43,7 @@ export const prerender = true;
         </div>
         <div>
           <label for="c-message" class="block text-sm font-semibold mb-1.5">Message *</label>
-          <textarea id="c-message" name="message" rows="5" required minlength="2"
+          <textarea id="c-message" name="message" rows="5" required minlength="2" maxlength="4000"
                     class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent"></textarea>
         </div>
         <button id="c-submit" type="submit"

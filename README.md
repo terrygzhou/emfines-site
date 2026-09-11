@@ -64,7 +64,9 @@ Deploys to the stable URL `https://emfines-site.terry-g-zhou.workers.dev` (free 
 
   ```bash
   wrangler secret put ENQUIRY_TO    # studio inbox address
-  wrangler secret put ENQUIRY_FROM  # verified Email Service sender (optional; defaults to the worker hostname)
+  wrangler secret put ENQUIRY_FROM  # verified Email Service sender (optional)
+  wrangler secret put BREVO_API_KEY # optional: Brevo SMTP (free 300 emails/day)
+  wrangler secret put BREVO_FROM    # optional: verified Brevo sender domain
   ```
 
   Until `ENQUIRY_TO` is set the endpoint runs in **archive-only mode**: the brief is still
@@ -111,6 +113,51 @@ the committed config — no wrangler secret needed. No PII is sent: only page
 paths, referrers, and the anonymous `design_enquiry_submitted` /
 `contact_enquiry_submitted` events fired from the enquiry-form success
 handlers.
+
+## Security posture
+
+Security hardening from the `harden-site-security` change (the dated audit
+snapshot is `reports/security-review.md`).
+
+- **Bounded input** — every enquiry field has a server-side maximum
+  (`src/lib/enquiry.ts`); over-long values are rejected with a per-field error.
+  The form `maxlength`s mirror the same numbers for UX only — the server is the
+  authority (never trust the client).
+- **Photo content validation** — photo attachments must be genuine base64 whose
+  decoded bytes carry the declared type's magic bytes (JPEG / PNG / WebP), not
+  just any base64 blob under the 5 MB cap.
+- **Rate limiting (worker-side)** — one short-lived KV counter per client IP
+  per 5-minute window; more than 10 requests get `429` + `Retry-After` and are
+  neither archived nor emailed. Zone-level rate-limit rules are a paid feature,
+  so the limiter lives in the worker (free-tier only); a KV failure fails open
+  (logged) and never breaks the durable write path.
+- **No CORS** — the enquiry forms are same-origin; there is no CORS preflight
+  (`OPTIONS` answers 405), so cross-origin scripted JSON posts fail the
+  preflight rather than hitting the endpoint.
+- **Email sender hygiene** — email is sent only from a verified sender
+  (`BREVO_FROM` / `ENQUIRY_FROM`). When neither is set the channel is skipped
+  (**archive-only** — the brief is still written to KV) instead of defaulting to
+  the `.workers.dev` hostname, which would disclose the account name.
+- **Umami subresource integrity** — the Umami `<script>` ships with
+  `integrity` + `crossorigin`; when no real SRI hash is configured the embed is
+  suppressed, so an un-pinned third-party script is never loaded. Recompute the
+  hash with `node scripts/umami-integrity.mjs` after any Umami upgrade.
+- **Response headers (Cloudflare zone, not code)** — the zone should serve
+  `X-Content-Type-Options: nosniff`, `Referrer-Policy:
+  strict-origin-when-cross-origin`, `X-Frame-Options: DENY`,
+  `Permissions-Policy: camera=(), geolocation=(), microphone=()`, and HSTS
+  (`max-age=63072000; includeSubDomains`). These are Transform Rules + SSL/TLS
+  settings (owner console steps, tasks 7.1–7.2), verified on `GET /`.
+
+**Secrets never in git** (Constitution: free-tier / no committed secrets). The
+email credentials are wrangler secrets, set out-of-band:
+
+```bash
+wrangler secret put ENQUIRY_TO    # studio inbox address
+wrangler secret put ENQUIRY_FROM  # verified Email Service sender
+wrangler secret put BREVO_API_KEY # optional Brevo SMTP
+wrangler secret put BREVO_FROM    # optional verified Brevo sender domain
+```
 
 ## Repo layout
 

@@ -58,6 +58,14 @@ export const CONTACT_SUBJECTS = ['Custom design', 'Repairs', 'Pieces & component
 export const PHOTO_TYPES: PhotoRef['type'][] = ['image/jpeg', 'image/png', 'image/webp'];
 export const MAX_PHOTOS = 3;
 export const MAX_PHOTO_BYTES = 5 * 1024 * 1024; // 5 MB each
+// Field maximums (harden-site-security): bound unbounded text fields so one
+// request can neither flood the KV archive nor the studio inbox.
+export const MAX_NAME = 100;
+export const MAX_PHONE = 40;
+export const MAX_PIECE_TYPE_OTHER = 100;
+export const MAX_GEMSTONES = 500;
+export const MAX_BRIEF = 4000;
+export const MAX_MESSAGE = 4000;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -79,6 +87,37 @@ function base64DecodedBytes(b64: string): number {
   return Math.floor((clean.length * 3) / 4) - pad;
 }
 
+/**
+ * Magic-byte signatures per allowed photo type. WebP is a RIFF container:
+ * "RIFF" at 0 and "WEBP" at 8 (bytes 4..7 are the little-endian payload size).
+ */
+const MAGIC_BYTES: Record<PhotoRef['type'], number[]> = {
+  'image/jpeg': [0xff, 0xd8, 0xff],
+  'image/png': [0x89, 0x50, 0x4e, 0x47],
+  'image/webp': [0x52, 0x49, 0x46, 0x46, 0x57, 0x45, 0x42, 0x50], // RIFF + WEBP
+};
+
+/** True when the decoded bytes carry the signature of the declared type. */
+function matchesMimeMagic(bytes: Uint8Array, mime: PhotoRef['type']): boolean {
+  const sig = MAGIC_BYTES[mime];
+  if (mime === 'image/webp') {
+    if (bytes.length < 12) return false;
+    const head = [0x52, 0x49, 0x46, 0x46]; // "RIFF"
+    const tail = sig.slice(4); // "WEBP"
+    return head.every((b, j) => bytes[j] === b) && tail.every((b, j) => bytes[8 + j] === b);
+  }
+  return sig.every((b, j) => bytes[j] === b);
+}
+
+// Both runtime targets expose a global `Buffer` (the Node unit harness
+// natively; the worker via nodejs_compat), but the type-checker knows no
+// @types/node by design, so reach it through a typed global handle.
+const nodeBuffer: {
+  from(data: string, encoding?: 'base64'): Uint8Array;
+} = (globalThis as unknown as {
+  Buffer: { from(data: string, encoding?: 'base64'): Uint8Array };
+}).Buffer;
+
 function parsePhoto(v: unknown, i: number, errors: string[]): PhotoRef | null {
   if (typeof v !== 'string' || !v.startsWith('data:')) {
     errors.push(`photos[${i}]: must be a data URL`);
@@ -98,12 +137,24 @@ function parsePhoto(v: unknown, i: number, errors: string[]): PhotoRef | null {
     errors.push(`photos[${i}]: must be base64-encoded`);
     return null;
   }
-  const bytes = base64DecodedBytes(m[3]);
+  const raw = m[3].replace(/\s+/g, '');
+  const bytes = base64DecodedBytes(raw);
   if (bytes <= 0 || bytes > MAX_PHOTO_BYTES) {
     errors.push(`photos[${i}]: each photo must be at least 1 byte and no more than 5 MB`);
     return null;
   }
-  return { filename: `photo-${i + 1}`, type: mime, data: m[3] };
+  // Content checks (harden-site-security): the payload must be genuine
+  // base64 and the decoded bytes must carry the declared type's magic.
+  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(raw)) {
+    errors.push(`photos[${i}]: must be valid base64`);
+    return null;
+  }
+  const decoded = nodeBuffer.from(raw, 'base64');
+  if (!matchesMimeMagic(decoded, mime)) {
+    errors.push(`photos[${i}]: bytes do not match the declared ${mime} type`);
+    return null;
+  }
+  return { filename: `photo-${i + 1}`, type: mime, data: raw };
 }
 
 export function validatePayload(payload: unknown, kind: Kind): ValidationResult {
@@ -112,11 +163,13 @@ export function validatePayload(payload: unknown, kind: Kind): ValidationResult 
     const p = (payload ?? {}) as Record<string, unknown>;
     const name = asString(p.name);
     if (name.length < 2) errors.push('name must be at least 2 characters');
+    if (name.length > MAX_NAME) errors.push(`name too long (max ${MAX_NAME} characters)`);
 
     const email = asString(p.email);
     if (!EMAIL_RE.test(email)) errors.push('a valid email is required');
 
     const phone = asString(p.phone); // optional, free text
+    if (phone.length > MAX_PHONE) errors.push(`phone too long (max ${MAX_PHONE} characters)`);
 
     const pieceType = asString(p.pieceType);
     if (!PIECE_TYPES.includes(pieceType as (typeof PIECE_TYPES)[number])) {
@@ -125,6 +178,9 @@ export function validatePayload(payload: unknown, kind: Kind): ValidationResult 
     const pieceTypeOther = asString(p.pieceTypeOther);
     if (pieceType === 'Other' && pieceTypeOther.length < 2) {
       errors.push('please describe the piece type when selecting Other');
+    }
+    if (pieceTypeOther.length > MAX_PIECE_TYPE_OTHER) {
+      errors.push(`pieceTypeOther too long (max ${MAX_PIECE_TYPE_OTHER} characters)`);
     }
 
     const metals = Array.isArray(p.metals)
@@ -136,6 +192,7 @@ export function validatePayload(payload: unknown, kind: Kind): ValidationResult 
     }
 
     const gemstones = asString(p.gemstones); // optional
+    if (gemstones.length > MAX_GEMSTONES) errors.push(`gemstones too long (max ${MAX_GEMSTONES} characters)`);
     const budget = asString(p.budget);
     if (budget && !BUDGETS.includes(budget as (typeof BUDGETS)[number])) {
       errors.push('budget must be one of the offered ranges');
@@ -143,6 +200,7 @@ export function validatePayload(payload: unknown, kind: Kind): ValidationResult 
 
     const brief = asString(p.brief);
     if (brief.length < 40) errors.push('brief must be at least 40 characters');
+    if (brief.length > MAX_BRIEF) errors.push(`brief too long (max ${MAX_BRIEF} characters)`);
 
     let photos: PhotoRef[] = [];
     if (p.photos !== undefined) {
@@ -185,6 +243,7 @@ export function validatePayload(payload: unknown, kind: Kind): ValidationResult 
   const p = (payload ?? {}) as Record<string, unknown>;
   const name = asString(p.name);
   if (name.length < 2) errors.push('name must be at least 2 characters');
+  if (name.length > MAX_NAME) errors.push(`name too long (max ${MAX_NAME} characters)`);
   const email = asString(p.email);
   if (!EMAIL_RE.test(email)) errors.push('a valid email is required');
   const subject = asString(p.subject);
@@ -193,6 +252,7 @@ export function validatePayload(payload: unknown, kind: Kind): ValidationResult 
   }
   const message = asString(p.message);
   if (message.length < 2) errors.push('a message is required');
+  if (message.length > MAX_MESSAGE) errors.push(`message too long (max ${MAX_MESSAGE} characters)`);
   if (errors.length) return { ok: false, errors };
   return { ok: true, data: { kind: 'contact', name, email, subject, message } };
 }

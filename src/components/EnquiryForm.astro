@@ -16,7 +16,7 @@ const contactPrefs = ['Email', 'Phone', 'Either'];
       <div class="grid gap-5 sm:grid-cols-2">
         <div>
           <label for="q-name" class="block text-sm font-semibold mb-1.5">Name *</label>
-          <input id="q-name" name="name" type="text" required minlength="2"
+          <input id="q-name" name="name" type="text" required minlength="2" maxlength="100"
                  class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent" />
           <p data-error-for="name" class="hidden mt-1 text-xs text-red-600"></p>
         </div>
@@ -31,7 +31,7 @@ const contactPrefs = ['Email', 'Phone', 'Either'];
       <div class="grid gap-5 sm:grid-cols-2">
         <div>
           <label for="q-phone" class="block text-sm font-semibold mb-1.5">Phone <span class="font-normal text-muted">(optional)</span></label>
-          <input id="q-phone" name="phone" type="tel"
+          <input id="q-phone" name="phone" type="tel" maxlength="40"
                  class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent" />
         </div>
         <div>
@@ -56,7 +56,7 @@ const contactPrefs = ['Email', 'Phone', 'Either'];
 
       <div id="piece-other-wrap" class="hidden">
         <label for="q-piece-other" class="block text-sm font-semibold mb-1.5">Tell us about your piece type</label>
-        <input id="q-piece-other" name="pieceTypeOther" type="text"
+        <input id="q-piece-other" name="pieceTypeOther" type="text" maxlength="100"
                class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent" />
         <p data-error-for="pieceTypeOther" class="hidden mt-1 text-xs text-red-600"></p>
       </div>
@@ -76,14 +76,14 @@ const contactPrefs = ['Email', 'Phone', 'Either'];
 
       <div>
         <label for="q-gemstones" class="block text-sm font-semibold mb-1.5">Gemstones / details <span class="font-normal text-muted">(optional)</span></label>
-        <input id="q-gemstones" name="gemstones" type="text"
+        <input id="q-gemstones" name="gemstones" type="text" maxlength="500"
                class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
                placeholder="e.g. sapphire, diamond, pearl…" />
       </div>
 
       <div>
         <label for="q-brief" class="block text-sm font-semibold mb-1.5">Your story / brief *</label>
-        <textarea id="q-brief" name="brief" rows="5" required minlength="40"
+        <textarea id="q-brief" name="brief" rows="5" required minlength="40" maxlength="4000"
                   class="w-full border border-line bg-bg px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
                   placeholder="Tell us what the piece is, who it's for, and anything that matters to it. Photos help — attach up to 3."></textarea>
         <p class="mt-1 text-xs text-muted" id="brief-hint">Minimum 40 characters — the more you share, the better our first sketch.</p>

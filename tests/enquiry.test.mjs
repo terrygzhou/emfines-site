@@ -8,8 +8,21 @@ import {
   emailBody,
 } from '../node_modules/.cache/enquiry.mjs';
 
+// Photo fixtures with REAL magic bytes so content validation is exercised:
+// JPEG  FF D8 FF ...   PNG  89 50 4E 47 0D 0A 1A 0A   WebP  RIFF ... WEBP
+const MAGICS = {
+  jpeg: [0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00],
+  png: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+  webp: [0x52, 0x49, 0x46, 0x46, 0x24, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50],
+};
+const photoDataUrl = (n, type = 'image/jpeg') => {
+  const key = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpeg';
+  const magic = Buffer.from(MAGICS[key]);
+  const body = Buffer.concat([magic, Buffer.alloc(Math.max(0, n - magic.length), 0xab)]);
+  return `data:${type};base64,${body.toString('base64')}`;
+};
 const b64 = (n) => Buffer.alloc(n, 1).toString('base64'); // ~n bytes decoded
-const dataUrl = (n) => `data:image/jpeg;base64,${b64(n)}`;
+const dataUrl = (n) => photoDataUrl(n, 'image/jpeg');
 
 function validDesign(overrides = {}) {
   return {
@@ -70,6 +83,60 @@ test('photos: max 3, types, size ≤5MB', () => {
   assert.equal(validatePayload(validDesign({ photos: [dataUrl(1000), dataUrl(1000)] }), 'design').ok, true);
   assert.equal(validatePayload(validDesign({ photos: ['data:image/gif;base64,xx'] }), 'design').ok, false);
   assert.equal(validatePayload(validDesign({ photos: [`data:image/jpeg;base64,${b64(6 * 1024 * 1024)}`] }), 'design').ok, false);
+});
+
+test('field maximums: over-long fields rejected with named errors', () => {
+  const longBrief = 'a'.repeat(4001);
+  const r1 = validatePayload(validDesign({ brief: longBrief }), 'design');
+  assert.equal(r1.ok, false);
+  assert.ok(r1.errors.join('; ').includes('brief'), JSON.stringify(r1.errors));
+
+  const r2 = validatePayload(validDesign({ name: 'x'.repeat(101) }), 'design');
+  assert.equal(r2.ok, false);
+  assert.ok(r2.errors.join('; ').includes('name'), JSON.stringify(r2.errors));
+
+  const r3 = validatePayload(validDesign({ phone: '9'.repeat(41) }), 'design');
+  assert.equal(r3.ok, false);
+  assert.ok(r3.errors.join('; ').includes('phone'), JSON.stringify(r3.errors));
+
+  const r4 = validatePayload(validDesign({ pieceType: 'Other', pieceTypeOther: 'z'.repeat(101) }), 'design');
+  assert.equal(r4.ok, false);
+  assert.ok(r4.errors.join('; ').includes('pieceTypeOther'), JSON.stringify(r4.errors));
+
+  const r5 = validatePayload(validDesign({ gemstones: 'g'.repeat(501) }), 'design');
+  assert.equal(r5.ok, false);
+  assert.ok(r5.errors.join('; ').includes('gemstones'), JSON.stringify(r5.errors));
+
+  const good = { kind: 'contact', name: 'Sam', email: 'sam@example.com', subject: 'Repairs', message: 'm'.repeat(4001) };
+  const r6 = validatePayload(good, 'contact');
+  assert.equal(r6.ok, false);
+  assert.ok(r6.errors.join('; ').includes('message'), JSON.stringify(r6.errors));
+});
+
+test('field maximums: at-limit requests still accepted', () => {
+  const r1 = validatePayload(validDesign({ brief: 'a'.repeat(4000), name: 'x'.repeat(100), phone: '9'.repeat(40) }), 'design');
+  assert.equal(r1.ok, true, JSON.stringify(r1.errors));
+  const good = { kind: 'contact', name: 'Sam', email: 'sam@example.com', subject: 'Repairs', message: 'm'.repeat(4000) };
+  assert.equal(validatePayload(good, 'contact').ok, true);
+});
+
+test('photos: non-base64 payload rejected', () => {
+  const r = validatePayload(validDesign({ photos: ['data:image/jpeg;base64,@@@!!!not-base64'] }), 'design');
+  assert.equal(r.ok, false);
+  assert.ok(r.errors.join('; ').includes('photos[0]'), JSON.stringify(r.errors));
+});
+
+test('photos: magic bytes must match the declared type', () => {
+  const jpegDeclaredPng = validatePayload(validDesign({ photos: [photoDataUrl(1000, 'image/png').replace('data:image/png', 'data:image/jpeg')] }), 'design');
+  assert.equal(jpegDeclaredPng.ok, false, 'PNG bytes declared as image/jpeg must be rejected');
+  assert.ok(jpegDeclaredPng.errors.join('; ').includes('photos[0]'), JSON.stringify(jpegDeclaredPng.errors));
+  const pngDeclaredJpeg = validatePayload(validDesign({ photos: [dataUrl(1000).replace('data:image/jpeg', 'data:image/png')] }), 'design');
+  assert.equal(pngDeclaredJpeg.ok, false, 'JPEG bytes declared as image/png must be rejected');
+});
+
+test('photos: genuine PNG / WebP payloads accepted', () => {
+  assert.equal(validatePayload(validDesign({ photos: [photoDataUrl(2000, 'image/png')] }), 'design').ok, true);
+  assert.equal(validatePayload(validDesign({ photos: [photoDataUrl(2000, 'image/webp')] }), 'design').ok, true);
 });
 
 test('unknown kind defaults to design', () => {

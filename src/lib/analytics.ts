@@ -20,6 +20,14 @@ export interface UmamiAnalytics {
   websiteId: string;
   /** Umami Cloud default; or your self-hosted Umami base URL (no trailing slash). */
   host: string;
+  /**
+   * Subresource-integrity hash of `${host}/script.js` (e.g. `sha384-...`,
+   * produced by `scripts/umami-integrity.mjs`). The embed is ONLY emitted when
+   * this is a real, non-placeholder value, so we never ship the Umami script
+   * without pinning it (harden-site-security). Recompute on every Umami
+   * upgrade - a stale hash makes the browser refuse to load the script.
+   */
+  integrity?: string;
 }
 
 export interface PostHogAnalytics {
@@ -60,9 +68,12 @@ export function isConfigured(value: string | undefined): boolean {
 
 /** Active Umami embed `<script>` tag, or `null` when not configured. */
 export function umamiScriptTag(cfg: UmamiAnalytics | undefined): string | null {
-  if (!cfg?.enabled || !isConfigured(cfg.websiteId)) return null;
+  // Ship the script ONLY with a real Subresource-Integrity pin, so an
+  // unverified third-party script is never loaded (missing/placeholder
+  // integrity -> no tag, per harden-site-security).
+  if (!cfg?.enabled || !isConfigured(cfg.websiteId) || !isConfigured(cfg.integrity)) return null;
   const host = (cfg.host || 'https://cloud.umami.is').replace(/\/+$/, '');
-  return `<script defer src="${host}/script.js" data-website-id="${cfg.websiteId.trim()}" data-do-not-track></script>`;
+  return `<script defer src="${host}/script.js" data-website-id="${cfg.websiteId.trim()}" data-do-not-track integrity="${cfg.integrity!.trim()}" crossorigin="anonymous"></script>`;
 }
 
 /**

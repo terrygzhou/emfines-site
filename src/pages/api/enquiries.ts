@@ -8,9 +8,16 @@ import {
   type PhotoRef,
   type Kind,
 } from '@/lib/enquiry';
+import {
+  RATE_LIMIT_PER_WINDOW,
+  RATE_WINDOW_MS,
+  rateWindowStartMs,
+  decideRateLimit,
+  type RateDecision,
+} from '@/lib/ratelimit';
 
 // Server-only endpoint (the single online feature). Order of operations:
-// validate -> write KV (durable, 30-day TTL) -> send email (best effort).
+// rate-limit -> validate -> write KV (durable, 30-day TTL) -> send email (best effort).
 // The form never writes to a permanent database; KV is an expiring archive.
 //
 // `env` (the worker's bindings object: KV namespace + secrets) comes from
@@ -18,19 +25,44 @@ import {
 // Astro.locals, only string vars (via getEnv()).
 export const prerender = false;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+// No CORS: the enquiry forms are same-origin and need no cross-origin access.
+// Cross-origin scripted JSON posts fail the preflight (there is no OPTIONS
+// handler), and curl-style abuse is throttled by the worker-side rate limit.
 
 const KV_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days (T3 handoff: PII not stored permanently)
+const RL_TTL_SECONDS = RATE_WINDOW_MS / 1000; // rate-limit counter lives one window
 
-function json(data: unknown, status = 200): Response {
+function json(data: unknown, status = 200, extra: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...extra },
   });
+}
+
+/**
+ * Worker-side per-client-IP rate limit (free tier: zone-level rate-limiting
+ * rules are a paid feature, Constitution I). One short-lived KV counter per
+ * client IP + 5-minute window; a throttle (or KV failure) never touches the
+ * enquiry archive. KV failures fail open — logged, request proceeds
+ * (Constitution V: optional hardening never breaks the durable write path).
+ */
+async function rateLimitPass(decision: RateDecision, ip: string): Promise<boolean> {
+  try {
+    const key = `ratelimit/${ip}/${decision.windowStart}`;
+    await env.emfines_enquiries.put(key, String(decision.nextCount), {
+      expirationTtl: RL_TTL_SECONDS,
+    });
+    return decision.allowed;
+  } catch (err) {
+    console.error('[enquiry] rate-limit counter unavailable — failing open', err);
+    return true;
+  }
+}
+
+function clientIp(request: Request): string {
+  // Workers injects the visitor IP into `request.cf` on all plans.
+  const cf = (request as unknown as { cf?: { ip?: string } }).cf;
+  return cf?.ip ?? 'unknown';
 }
 
 async function storeEnquiry(q: Enquiry): Promise<void> {
@@ -51,8 +83,12 @@ async function storeEnquiry(q: Enquiry): Promise<void> {
  * no monthly cap) — enabled by setting the BREVO_API_KEY worker secret.
  * Fallback: Cloudflare Email Service via node:mail (requires a Workers Paid
  * account; on free plans the lazy import fails and we degrade to
- * archive-only). Either way: returns false (never throws) when unconfigured
- * or on failure — the brief is already durably in KV, so nothing is lost.
+ * archive-only). Sender policy (harden-site-security): a VERIFIED sender
+ * address (BREVO_FROM / ENQUIRY_FROM) is required — when unconfigured the
+ * channel is skipped (archive-only) rather than defaulting to the
+ * .workers.dev hostname (account-name disclosure). Either way: returns
+ * false (never throws) when unconfigured or on failure — the brief is
+ * already durably in KV, so nothing is lost.
  */
 function escapeHtml(text: string): string {
   return text
@@ -61,15 +97,15 @@ function escapeHtml(text: string): string {
     .replaceAll('>', '&gt;');
 }
 
-async function sendViaBrevo(q: Enquiry, to: string, apiKey: string): Promise<boolean> {
+async function sendViaBrevo(q: Enquiry, to: string, apiKey: string, from: string): Promise<boolean> {
   const bodyText = emailBody(q);
   const payload: Record<string, unknown> = {
     sender: {
       name: 'EM Fine Studio',
       // BREVO_FROM lets us send from a verified domain (e.g. after adding the
-      // SPF/DKIM records for emfinestudio.com in Brevo); falls back to
-      // ENQUIRY_FROM, which Brevo rejects until that domain/sender is verified.
-      email: env.BREVO_FROM ?? env.ENQUIRY_FROM ?? 'emfines-site.terry-g-zhou.workers.dev',
+      // SPF/DKIM records for emfinestudio.com in Brevo); ENQUIRY_FROM is the
+      // Cloudflare Email Service verified sender.
+      email: from,
     },
     to: [{ email: to }],
     subject: emailSubject(q),
@@ -95,9 +131,14 @@ async function sendViaBrevo(q: Enquiry, to: string, apiKey: string): Promise<boo
 async function sendEnquiryEmail(q: Enquiry): Promise<boolean> {
   const to = env.ENQUIRY_TO;
   if (!to) return false; // not configured yet (OQ-1) — archive-only mode
+  const verifiedFrom = env.BREVO_FROM ?? env.ENQUIRY_FROM;
+  if (!verifiedFrom) {
+    console.log('[enquiry] no verified sender configured (ENQUIRY_FROM/BREVO_FROM) — archive-only');
+    return false;
+  }
   if (env.BREVO_API_KEY) {
     try {
-      return await sendViaBrevo(q, to, env.BREVO_API_KEY);
+      return await sendViaBrevo(q, to, env.BREVO_API_KEY, verifiedFrom);
     } catch (err) {
       console.error('[enquiry] brevo send failed', err);
       return false;
@@ -106,7 +147,7 @@ async function sendEnquiryEmail(q: Enquiry): Promise<boolean> {
   try {
     const { Mail, Attachment } = await import('node:mail');
     const mail = new Mail({
-      from: env.ENQUIRY_FROM ?? 'emfines-site.terry-g-zhou.workers.dev',
+      from: verifiedFrom,
       to,
       subject: emailSubject(q),
     });
@@ -131,6 +172,31 @@ async function sendEnquiryEmail(q: Enquiry): Promise<boolean> {
 }
 
 export async function POST({ request }: APIContext): Promise<Response> {
+  // 1) rate limit (before parsing the body — the cheapest rejection).
+  //    Every in-window POST bumps the counter; over-limit requests get 429
+  //    and are neither archived nor emailed.
+  const ip = clientIp(request);
+  const nowMs = Date.now();
+  // Read this window's counter; a KV read failure fails open (treat the window
+  // as empty) and is logged — never 5xx the write path (Constitution V).
+  let rawCount = 0;
+  try {
+    rawCount = Number(await env.emfines_enquiries.get(`ratelimit/${ip}/${rateWindowStartMs(nowMs)}`)) || 0;
+  } catch (err) {
+    console.error('[enquiry] rate-limit counter read failed — failing open', err);
+  }
+  const decision = decideRateLimit(rawCount, nowMs, RATE_LIMIT_PER_WINDOW);
+  if (!decision.allowed) {
+    await rateLimitPass(decision, ip);
+    return json(
+      { error: 'Too many requests — please try again later' },
+      429,
+      { 'Retry-After': String(decision.retryAfterSec) },
+    );
+  }
+  await rateLimitPass(decision, ip);
+
+  // 2) validate
   let payload: unknown;
   try {
     payload = await request.json();
@@ -144,6 +210,7 @@ export async function POST({ request }: APIContext): Promise<Response> {
     return json({ error: (result.errors ?? []).join('; ') }, 400);
   }
 
+  // 3) durable archive
   let stored = false;
   try {
     await storeEnquiry(result.data);
@@ -155,15 +222,20 @@ export async function POST({ request }: APIContext): Promise<Response> {
     return json({ error: 'Could not store your enquiry — please email us directly' }, 502);
   }
 
+  // 4) email (best effort)
   const emailDelivered = await sendEnquiryEmail(result.data);
   return json({ ok: true, emailDelivered });
 }
 
-export async function OPTIONS(): Promise<Response> {
-  return new Response(null, { status: 204, headers: CORS_HEADERS });
+// Non-POST methods answer 405 "method not allowed" with NO Access-Control-*
+// headers: the forms are same-origin and this endpoint deliberately supports no
+// CORS preflight, so a cross-origin OPTIONS preflight fails while the same-origin
+// form's POST still works. GET and a CORS-free OPTIONS handler both return 405
+// (site-security acceptance: "OPTIONS -> 405, no CORS headers").
+export async function GET(): Promise<Response> {
+  return json({ error: 'Method not allowed' }, 405);
 }
 
-// Anything else on this route: method not allowed.
-export async function GET(): Promise<Response> {
+export async function OPTIONS(): Promise<Response> {
   return json({ error: 'Method not allowed' }, 405);
 }
