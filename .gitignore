@@ -2,7 +2,12 @@ node_modules/
 .wrangler/
 .astro/
 dist/
-public/assets/
+
+# public/assets/ (gallery images + _manifest.csv + logo) IS tracked in git
+# (EMF-36) so any checkout — including a clean/CI one — can build a full,
+# image-bearing site and deploy it. Do NOT re-add a `public/assets/` ignore:
+# Cloudflare replaces the entire static-asset set on each `wrangler deploy`,
+# so an image-less deploy silently WIPES the live /assets/* set (EMF-29/33/36).
 
 # Analytics research output (EMF-32) — kept out of git
 analytics/

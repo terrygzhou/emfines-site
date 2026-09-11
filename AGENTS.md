@@ -75,8 +75,14 @@ Run these in order; all must pass:
 ## Project notes
 
 - Never edit `dist/` by hand — it is generated (and gitignored). Edit source,
-  rebuild, and commit the source change (`dist/`, `public/assets/`, and
-  `src/generated/` are not committed).
+  rebuild, and commit the source change. `dist/` and `src/generated/`
+  are gitignored local outputs (do NOT commit them); but `public/assets/`
+  (gallery images + `_manifest.csv` + logo) **is** committed (EMF-36) so
+  any clean/CI checkout can build and deploy a full, image-bearing site —
+  Cloudflare replaces the whole /assets/* set on each `wrangler deploy`,
+  so the images must be reachable in git (an image-less deploy wipes the
+  live /assets/* set; the EMF-33 `scripts/guard-deploy-assets.mjs` guard
+  still runs on `npm run deploy` as defense-in-depth).
 - `ENQUIRY_TO` / `ENQUIRY_FROM` are wrangler secrets (Cloudflare Email
   Service) — never commit them; set via `wrangler secret put`.
 - Enquiries land in KV namespace `emfines_enquiries` with a 30-day TTL per
