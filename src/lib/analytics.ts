@@ -112,6 +112,16 @@ export function trackConversion(event: string, properties?: Record<string, unkno
   g.umami?.track?.(event, properties); // fallback for a Umami-only deployment
 }
 
+/**
+ * Fire a named custom event on Umami (or PostHog if present). Use this for
+ * funnel mid-steps — e.g. form scroll-into-view, budget selected — so Umami's
+ * funnel report (type="funnel", step.type="event") can track the journey.
+ * No-op-safe, same contract as trackConversion.
+ */
+export function trackEvent(name: string, properties?: Record<string, unknown>): void {
+  trackConversion(name, properties);
+}
+
 /** Whether at least one provider would actually emit (used for guardrails). */
 export function anyAnalyticsActive(cfg: AnalyticsConfig = {}): boolean {
   return umamiScriptTag(cfg.umami) !== null || postHogScriptTag(cfg.posthog) !== null;
