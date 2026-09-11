@@ -3,6 +3,17 @@
 // for providers that are actually configured in `ANALYTICS` (enabled + real key).
 // With the default placeholder config, nothing is emitted — the build stays
 // clean and no third-party pings happen until the owner enables a provider.
+//
+// The helpers return the complete <script> tag as a string, so it is injected
+// via set:html on Astro's Fragment (no wrapper element) — wrapping it inside
+// another <script is:inline> would nest the tags into invalid HTML
+// (<script><script…></script></script>) and the tracker would never load.
+import { Fragment as _Fragment } from 'astro/jsx-runtime';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// Astro's checker rejects `Fragment` as a JSX component type; the runtime
+// passes set:html straight through, so cast to silence the false positive.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Fragment: any = _Fragment;
 import { ANALYTICS } from '@/config';
 import { umamiScriptTag, postHogScriptTag } from '@/lib/analytics';
 
@@ -10,12 +21,8 @@ const umami = umamiScriptTag(ANALYTICS.umami);
 const posthog = postHogScriptTag(ANALYTICS.posthog);
 ---
 {
-  umami && (
-    <script is:inline set:html={umami} />
-  )
+  umami && <Fragment set:html={umami} />
 }
 {
-  posthog && (
-    <script is:inline set:html={posthog} />
-  )
+  posthog && <Fragment set:html={posthog} />
 }
