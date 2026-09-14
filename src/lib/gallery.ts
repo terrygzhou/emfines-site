@@ -52,7 +52,7 @@ export const UNCATEGORIZED = 'uncategorised';
  * content (served statically, e.g. the header logo). Excluded from the gallery
  * items and from drift.orphans; see buildManifest.
  */
-export const UI_ASSETS: ReadonlySet<string> = new Set(['logo.png']);
+export const UI_ASSETS: ReadonlySet<string> = new Set(['logo.png', 'repairs-bench-tools-01.jpg']);
 
 const HEADER_COLUMNS = [
   'group',

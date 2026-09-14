@@ -1,0 +1,124 @@
+{
+  "format": 1,
+  "entries": {
+    "topology/peer-seq": {
+      "key": "topology/peer-seq",
+      "value": {
+        "format": 1,
+        "next": 3
+      },
+      "version": 3,
+      "updatedAt": 1789127308018,
+      "updatedBy": {
+        "id": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+        "name": "main",
+        "kind": "main",
+        "sessionId": "01a08fd4-3602-7109-90f3-cbff8496787d"
+      }
+    },
+    "topology/hosts/6e72fbff722e0d7c790f85ee77800373565ea3047cfbef4dcc1e0296a10b55e7": {
+      "key": "topology/hosts/6e72fbff722e0d7c790f85ee77800373565ea3047cfbef4dcc1e0296a10b55e7",
+      "value": {
+        "format": 1,
+        "id": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+        "rootId": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+        "identity": {
+          "id": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+          "name": "main",
+          "kind": "main",
+          "sessionId": "01a08fd4-3602-7109-90f3-cbff8496787d"
+        },
+        "startedAt": 1789127308012,
+        "updatedAt": 1789141999632,
+        "expiresAt": 1789142014632
+      },
+      "version": 3561,
+      "updatedAt": 1789141999633,
+      "updatedBy": {
+        "id": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+        "name": "main",
+        "kind": "main",
+        "sessionId": "01a08fd4-3602-7109-90f3-cbff8496787d"
+      }
+    },
+    "sessions/01a08fd4-3602-7109-90f3-cbff8496787d": {
+      "key": "sessions/01a08fd4-3602-7109-90f3-cbff8496787d",
+      "value": {
+        "id": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+        "name": "ES-3",
+        "label": "ES-3",
+        "kind": "peer",
+        "status": "idle",
+        "runner": "pi",
+        "transport": "host",
+        "cwd": "/home/terry/projects/emfines-site",
+        "sessionId": "01a08fd4-3602-7109-90f3-cbff8496787d",
+        "model": "sglang/Qwen3.8-27B-NVFP4",
+        "thinking": "medium",
+        "startedAt": 1789127308012,
+        "updatedAt": 1789141999632,
+        "pendingMessages": false,
+        "local": false
+      },
+      "version": 3560,
+      "updatedAt": 1789141999633,
+      "updatedBy": {
+        "id": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+        "name": "main",
+        "kind": "main",
+        "sessionId": "01a08fd4-3602-7109-90f3-cbff8496787d"
+      }
+    },
+    "topology/participants/6e72fbff722e0d7c790f85ee77800373565ea3047cfbef4dcc1e0296a10b55e7": {
+      "key": "topology/participants/6e72fbff722e0d7c790f85ee77800373565ea3047cfbef4dcc1e0296a10b55e7",
+      "value": {
+        "format": 1,
+        "id": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+        "kind": "root",
+        "rootId": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+        "ownerHostId": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+        "ownerIdentityId": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+        "name": "main",
+        "status": "idle",
+        "runner": "pi",
+        "transport": "host",
+        "capabilities": [
+          "steer",
+          "followUp",
+          "fabric"
+        ],
+        "cwd": "/home/terry/projects/emfines-site",
+        "sessionId": "01a08fd4-3602-7109-90f3-cbff8496787d",
+        "model": "sglang/Qwen3.8-27B-NVFP4",
+        "thinking": "medium",
+        "startedAt": 1789127308012,
+        "updatedAt": 1789141999632,
+        "pendingMessages": false,
+        "controlProtocol": "v1",
+        "label": "ES-3"
+      },
+      "version": 3561,
+      "updatedAt": 1789141999633,
+      "updatedBy": {
+        "id": "session:01a08fd4-3602-7109-90f3-cbff8496787d",
+        "name": "main",
+        "kind": "main",
+        "sessionId": "01a08fd4-3602-7109-90f3-cbff8496787d"
+      }
+    }
+  },
+  "versions": {
+    "topology/peer-seq": 3,
+    "topology/hosts/a04e658e88e0e1f8b10d3d5ae36e34effccc7d01f0c19560408c39d137bca124": 2189,
+    "sessions/01a08f2f-78e0-7b39-a32e-842b89f2b70a": 2188,
+    "topology/participants/a04e658e88e0e1f8b10d3d5ae36e34effccc7d01f0c19560408c39d137bca124": 2189,
+    "topology/hosts/6e72fbff722e0d7c790f85ee77800373565ea3047cfbef4dcc1e0296a10b55e7": 3561,
+    "sessions/01a08fd4-3602-7109-90f3-cbff8496787d": 3560,
+    "topology/participants/6e72fbff722e0d7c790f85ee77800373565ea3047cfbef4dcc1e0296a10b55e7": 3561
+  },
+  "tombstoneOrder": [
+    "sessions/01a08f2f-78e0-7b39-a32e-842b89f2b70a",
+    "topology/participants/a04e658e88e0e1f8b10d3d5ae36e34effccc7d01f0c19560408c39d137bca124",
+    "topology/hosts/a04e658e88e0e1f8b10d3d5ae36e34effccc7d01f0c19560408c39d137bca124"
+  ]
+}

@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "layers": [],
+  "updatedAt": "2026-09-11T06:39:54.711Z",
+  "servers": {
+    "d2": {
+      "definitionHash": "70a79760f75f7b92917f4b2a1de5984e03894f5e821d42b06efed218c28cee94",
+      "transport": "stdio",
+      "description": null,
+      "fetchedAt": "2026-09-11T06:39:54.585Z",
+      "stale": false,
+      "tools": [
+        {
+          "name": "d2_create",
+          "description": "Create a new diagram that can be edited with Oracle API tools. This is the unified way to create diagrams:\n\n1. Empty diagram (no content): For building incrementally with Oracle API\n2. From D2 text (with content): For rendering complete D2 diagrams\n\nBoth types are fully editable using d2_oracle_* tools.\n\nExamples:\n- d2_create(id=\"arch\") → Empty diagram for incremental building\n- d2_create(id=\"arch\", content=\"a -> b\") → Diagram from D2 text\n\nUse cases:\n- Building diagrams from data sources (use empty)\n- Rendering complete D2 text (use with content)\n- Converting existing D2 to editable form (use with content)\n- Interactive diagram creation (use empty)",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "default": "",
+                "description": "Optional D2 text content. If provided, creates a diagram from this content (which can then be edited with Oracle API). If not provided, creates an empty diagram for incremental building. Both are fully editable.",
+                "type": "string"
+              },
+              "id": {
+                "description": "Unique identifier for the diagram",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "d2_export",
+          "description": "Export an existing diagram to SVG, PNG, or PDF format. The diagram must first be created using d2_create (not d2_render). Supports exporting all D2 features including SQL tables, UML classes, sequence diagrams, code blocks, and markdown-rich documentation. Note: PNG and PDF formats require external tools (e.g., Chromium) to be installed on the system.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "diagramId": {
+                "description": "ID of the diagram to export",
+                "type": "string"
+              },
+              "format": {
+                "default": "svg",
+                "description": "Export format (svg, png, pdf)",
+                "enum": [
+                  "svg",
+                  "png",
+                  "pdf"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "diagramId"
+            ]
+          }
+        },
+        {
+          "name": "d2_oracle_create",
+          "description": "Add new shapes or connections to an existing D2 diagram incrementally. Use this when you need to build diagrams piece-by-piece or add elements to a diagram after initial creation. Perfect for: iteratively building complex diagrams, adding elements based on parsed data, or modifying existing diagrams without regenerating everything. Creates basic elements only - use d2_oracle_set afterward to add special shapes (sql_table, class), styles, or properties. Example: Create 'User' shape, then set 'User.shape: person' with d2_oracle_set.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "diagram_id": {
+                "description": "ID of the diagram to modify",
+                "type": "string"
+              },
+              "key": {
+                "description": "Key for the new element. Examples: 'User' for shape, 'User -> API' for connection, 'System.Database' for nested shape. Use dots for nesting, arrows (->) for connections",
+                "type": "string"
+              }
+            },
+            "required": [
+              "diagram_id",
+              "key"
+            ]
+          }
+        },
+        {
+          "name": "d2_oracle_delete",
+          "description": "Remove shapes or connections from a D2 diagram. Use this when you need to: clean up unwanted elements, refactor diagram structure, or remove outdated components. Important: deleting a container shape will also delete ALL its child elements. Connections to/from deleted shapes are automatically removed. Use this carefully - consider using d2_oracle_move to relocate elements instead if you want to preserve them. Perfect for iterative diagram refinement and cleanup operations.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "diagram_id": {
+                "description": "ID of the diagram to modify",
+                "type": "string"
+              },
+              "key": {
+                "description": "Key of the element to delete. Examples: 'server' for a shape, 'server -> database' for a connection, 'System.Database' for nested element. WARNING: Deleting containers removes all children",
+                "type": "string"
+              }
+            },
+            "required": [
+              "diagram_id",
+              "key"
+            ]
+          }
+        },
+        {
+          "name": "d2_oracle_get_info",
+          "description": "Inspect and analyze diagram elements to understand structure and properties. Use this when you need to: verify element exists before modifying, check current properties/attributes, explore container contents, debug connection issues, or understand diagram hierarchy. Info types: 'object' returns shape details (labels, styles, attributes), 'edge' returns connection properties (labels, arrows, styles), 'children' lists all elements inside a container. Essential for safe modifications - always check before changing. Returns JSON with complete element information.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "diagram_id": {
+                "description": "ID of the diagram",
+                "type": "string"
+              },
+              "info_type": {
+                "default": "object",
+                "description": "Type of information to retrieve: 'object' for shape/container details, 'edge' for connection properties, 'children' to list elements inside a container",
+                "type": "string"
+              },
+              "key": {
+                "description": "Key of the element to inspect. Examples: 'server' for shape info, 'server -> database' for connection info, 'System' to see what's inside a container",
+                "type": "string"
+              }
+            },
+            "required": [
+              "diagram_id",
+              "key"
+            ]
+          }
+        },
+        {
+          "name": "d2_oracle_move",
+          "description": "Reorganize diagram structure by moving shapes between containers. Use this when you need to: group related components together, refactor diagram hierarchy, move elements into or out of systems/packages, or restructure without losing connections. Containers are shapes that hold other shapes (like 'System', 'Network', or any shape with children). Moving preserves all connections - they're automatically rerouted. Set include_descendants=false to move only the parent shape, leaving children in original location. Essential for maintaining clean, logical diagram organization.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "diagram_id": {
+                "description": "ID of the diagram to modify",
+                "type": "string"
+              },
+              "include_descendants": {
+                "default": "true",
+                "description": "Whether to move child elements along with the parent (true/false). Default true preserves hierarchy",
+                "type": "string"
+              },
+              "key": {
+                "description": "Key of the element to move (e.g., 'server', 'Database.users_table')",
+                "type": "string"
+              },
+              "new_parent": {
+                "description": "Target container key where element will be moved. Use empty string '' to move to root level. Examples: 'System' to move into System container, 'Network.DMZ' for nested container",
+                "type": "string"
+              }
+            },
+            "required": [
+              "diagram_id",
+              "key",
+              "new_parent"
+            ]
+          }
+        },
+        {
+          "name": "d2_oracle_rename",
+          "description": "Change the identifier of shapes or connections while preserving all relationships. Use this when you need to: improve clarity with better names, fix typos or naming inconsistencies, refactor diagram elements, or align with updated terminology. The rename is intelligent - ALL connections referencing the old name are automatically updated to use the new name. This includes connections where the element is source, target, or part of a longer path. Child elements keep their relative names. Safe operation that maintains diagram integrity.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "diagram_id": {
+                "description": "ID of the diagram to modify",
+                "type": "string"
+              },
+              "key": {
+                "description": "Current key of the element to rename (e.g., 'server', 'DB', 'System.OldName')",
+                "type": "string"
+              },
+              "new_name": {
+                "description": "New identifier for the element (e.g., 'web_server', 'Database', 'NewName'). Connections are automatically updated",
+                "type": "string"
+              }
+            },
+            "required": [
+              "diagram_id",
+              "key",
+              "new_name"
+            ]
+          }
+        },
+        {
+          "name": "d2_oracle_serialize",
+          "description": "Export the current state of an Oracle-edited diagram as D2 text. Use this when you need to: see the complete D2 syntax after incremental changes, save diagram source for version control, share diagram definition with others, debug complex diagrams, or transition from Oracle API to direct D2 text editing. Returns the exact D2 code that would produce the current diagram, including all shapes, connections, special elements (sql_table, class), styles, and content. This is THE way to get the textual representation after using Oracle API tools.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "diagram_id": {
+                "description": "ID of the diagram to get D2 text for",
+                "type": "string"
+              }
+            },
+            "required": [
+              "diagram_id"
+            ]
+          }
+        },
+        {
+          "name": "d2_oracle_set",
+          "description": "Modify properties of existing diagram elements. Use this when you need to: transform basic shapes into special types (sql_table, class, sequence_diagram), add visual styling (colors, fonts, borders), set labels and tooltips, or add content like markdown or code blocks. Common attributes: shape (rectangle, cylinder, person, cloud), style.fill (colors), style.stroke, label, tooltip, icon. For special shapes: 'User.shape: sql_table' then 'User.id: int |pk|' for columns, 'Animal.shape: class' then 'Animal.+name: string' for fields. For SQL table constraints: 'User.id.constraint' with value 'primary_key', 'foreign_key', or 'unique'. Note: For multiple constraints, use d2_create with array syntax like 'id: int {constraint: [primary_key; unique]}'. Essential for making diagrams visually rich and semantically meaningful.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "diagram_id": {
+                "description": "ID of the diagram to modify",
+                "type": "string"
+              },
+              "key": {
+                "description": "Key path to the attribute. Examples: 'User.shape' for shape type, 'User.style.fill' for color, 'User.id' for sql_table columns, 'User.id.constraint' for SQL constraints, 'Animal.+name' for class fields, 'User.tooltip' for hover text",
+                "type": "string"
+              },
+              "tag": {
+                "description": "Optional tag for the attribute (e.g., 'label' or 'style')",
+                "type": "string"
+              },
+              "value": {
+                "description": "The value to set. Shape types: rectangle, cylinder, person, cloud, sql_table, class, code, sequence_diagram. Colors: red, blue, #FF5733. For sql_table columns: 'int |pk|', 'varchar(255)'. For SQL constraints: 'primary_key', 'foreign_key', 'unique'. For markdown: '|md # Title\\nContent |'",
+                "type": "string"
+              }
+            },
+            "required": [
+              "diagram_id",
+              "key",
+              "value"
+            ]
+          }
+        },
+        {
+          "name": "d2_save",
+          "description": "Save an existing diagram to a file on disk. The diagram must be created first using d2_create. This tool exports the diagram in the specified format and writes it to a file path, returning the path where it was saved. Supported formats: svg (default), png, pdf. If no path is provided, saves to a temporary directory with a timestamped filename. Path handling: absolute paths (e.g., /Users/name/diagram.svg) are used as-is; relative paths (e.g., diagram.svg) are resolved from the MCP server's working directory. When unsure, either use absolute paths or omit the path to use the temp directory.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "diagramId": {
+                "description": "ID of the diagram to save",
+                "type": "string"
+              },
+              "format": {
+                "default": "svg",
+                "description": "Export format (svg, png, pdf)",
+                "enum": [
+                  "svg",
+                  "png",
+                  "pdf"
+                ],
+                "type": "string"
+              },
+              "path": {
+                "description": "Output file path. Examples: '/Users/name/diagram.svg' (absolute), 'output/diagram.svg' (relative to MCP server), or omit for auto-generated path in temp directory",
+                "type": "string"
+              }
+            },
+            "required": [
+              "diagramId"
+            ]
+          }
+        }
+      ]
+    },
+    "codegraph": {
+      "definitionHash": "fea7ec4b5732c8b3dee411c5e13d12a8d7a4fa9177a922c07be8ce2d87a10818",
+      "transport": "stdio",
+      "description": null,
+      "fetchedAt": "2026-09-11T06:39:54.628Z",
+      "stale": false,
+      "tools": [
+        {
+          "name": "codegraph_explore",
+          "description": "PRIMARY TOOL — call FIRST for almost any question OR before an edit: how does X work, architecture, a bug, where/what is X, surveying an area, or the symbols you are about to change. Returns the verbatim source of the relevant symbols grouped by file in ONE capped call (Read-equivalent — treat the shown source as already Read; do NOT re-open those files), plus the call path among them. Query can be a natural-language question OR a bag of symbol/file names. Usually the ONLY call you need — more accurate context, in far fewer tokens and round-trips than a search/Read/Grep loop.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Symbol names, file names, or short code terms to explore (e.g., \"AuthService loginUser session-manager\", \"GraphTraverser BFS impact traversal.ts\"). For a flow question, name the symbols spanning the flow (e.g. \"mutateElement renderScene\"). A natural-language question works too — no prior codegraph_search needed."
+              },
+              "maxFiles": {
+                "type": "number",
+                "description": "Maximum number of files to include source code from (default: 12)",
+                "default": 12
+              },
+              "projectPath": {
+                "type": "string",
+                "description": "Absolute path to the project to query (or any directory inside it) — codegraph uses the nearest .codegraph/ index at or above that path. Omit to use this session's default project. Pass it to query a second codebase, or when the server root has no index of its own (e.g. a monorepo where only sub-projects are indexed, so there is no default project)."
+              }
+            },
+            "required": [
+              "query",
+              "projectPath"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
