@@ -1,13 +1,14 @@
 // Web analytics (EMF-24) — pure, unit-testable helpers that render the
 // provider embed scripts and fire conversion events.
 //
-// Two providers are supported, each independently on/off:
-//   - Umami:  lightweight, cookieless, GDPR-friendly page analytics.
-//   - PostHog: product analytics with event capture (pageviews + custom events).
+// Three providers are supported, each independently on/off:
+//   - Umami:   lightweight, cookieless, GDPR-friendly page analytics.
+//   - PostHog: product analytics with event capture (events + pageviews in LAN).
+//   - Matomo:  self-hosted, Docker-deployed page + event analytics (LAN/local).
 //
-// Both gate on `enabled` AND a real (non-placeholder) key, so the repo builds
-// green and ships no broken/analytics pings until the owner pastes in
-// credentials and flips `enabled` to true.
+// Both/each gate on `enabled` AND a real (non-placeholder) credential, so the
+// repo builds green and ships no broken/analytics pings until the owner pastes
+// in credentials and flips `enabled` to true.
 //
 // Privacy: Umami embeds use `data-do-not-track` (skip when the browser sends
 // Do Not Track); no PII is ever sent — only page paths, referrers, and
@@ -47,9 +48,19 @@ export interface PostHogAnalytics {
   capturePageLeave?: boolean;
 }
 
+export interface MatomoAnalytics {
+  /** Owner toggles this once a self-hosted Matomo box (local Docker) is reachable. */
+  enabled: boolean;
+  /** Matomo → Administration → Websites → "Website ID" (a numeric ID, e.g. `1`). */
+  siteId: string;
+  /** Self-hosted Matomo base URL (no trailing slash), e.g. `http://matomo.local`. */
+  host: string;
+}
+
 export interface AnalyticsConfig {
   umami?: UmamiAnalytics;
   posthog?: PostHogAnalytics;
+  matomo?: MatomoAnalytics;
 }
 
 /** Markers that mean "the owner hasn't filled this in yet". */
@@ -105,29 +116,72 @@ export function postHogScriptTag(cfg: PostHogAnalytics | undefined): string | nu
 }
 
 /**
- * Fire a conversion event on exactly ONE provider so enabling both Umami and
- * PostHog never double-counts a conversion. PostHog is the event tool and the
- * preferred owner; Umami is the fallback only when no PostHog SDK is present
- * (a Umami-only deployment). No-op-safe: never throws when the SDK is absent
- * or late. Call from form success handlers.
+ * Active self-hosted Matomo embed `<script>` tag, or `null` when not
+ * configured. Uses Matomo's classic self-hosted `matomo.js` tracker (fetched
+ * from the owner's Matomo box, never an external CDN) so a LAN/local deploy
+ * works offline. The tracker auto-records the initial pageview on load and
+ * exposes `window._paq` for custom events (fired from the success handlers
+ * below via `trackEvent` / `trackConversion`).
+ *
+ * Like Umami, the embed is only emitted when every credential is a real,
+ * non-placeholder value — Matomo always needs a self-hosted `host`, so an
+ * empty host suppresses the tag (no broken pings to an unreachable host).
+ */
+export function matomoScriptTag(cfg: MatomoAnalytics | undefined): string | null {
+  if (!cfg?.enabled || !isConfigured(cfg.siteId) || !isConfigured(cfg.host)) return null;
+  const base = (cfg.host || '').replace(/\/+$/, '');
+  const root = base.replace(/\/+$/, '');
+  return [
+    `<script>`,
+    `  window._paq = window._paq || [];`,
+    `  (function () {`,
+    `    var u = ${JSON.stringify(`${root}/`)};`,
+    `    window._paq.push(['setTrackerUrl', u + 'matomo.php']);`,
+    `    window._paq.push(['setSiteId', ${JSON.stringify(cfg.siteId.trim())}]);`,
+    `    window._paq.push(['enableLinkTracking']);`,
+    `    var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];`,
+    `    g.async = true; g.type = 'text/javascript';`,
+    `    g.src = u + 'matomo.js';`,
+    `    s.parentNode.insertBefore(g, s);`,
+    `  })();`,
+    `</script>`,
+  ].join('\n');
+}
+
+/**
+ * Fire a conversion event on exactly ONE provider so enabling several never
+ * double-counts a conversion. Deterministic single-owner priority:
+ *   PostHog -> Matomo -> Umami.
+ * PostHog is the preferred event tool; Matomo is the self-hosted local
+ * fallback; Umami is the last-resort owner for a Umami-only (public) deploy.
+ * No-op-safe: never throws when the SDK is absent or late. Call from form
+ * success handlers.
  */
 export function trackConversion(event: string, properties?: Record<string, unknown>): void {
   const g = globalThis as unknown as {
     umami?: { track?: (ev: string, p?: Record<string, unknown>) => void };
     ph?: { capture?: (ev: string, p?: Record<string, unknown>) => void };
+    _paq?: unknown[];
   };
+  // Single-owner priority: PostHog preferred, then Matomo, then Umami — the
+  // first present provider owns the event so the same conversion is never
+  // captured twice.
   if (typeof g.ph?.capture === 'function') {
     g.ph!.capture!(event, properties);
+    return;
+  }
+  if (Array.isArray(g._paq)) {
+    g._paq!.push(['trackEvent', 'enquiry', event, JSON.stringify(properties ?? {}), 1]);
     return; // single-owner: never also fire to Umami (no duplication)
   }
   g.umami?.track?.(event, properties); // fallback for a Umami-only deployment
 }
 
 /**
- * Fire a named custom event on Umami (or PostHog if present). Use this for
- * funnel mid-steps — e.g. form scroll-into-view, budget selected — so Umami's
- * funnel report (type="funnel", step.type="event") can track the journey.
- * No-op-safe, same contract as trackConversion.
+ * Fire a named custom event on the active provider (PostHog > Matomo > Umami).
+ * Use this for funnel mid-steps — e.g. form scroll-into-view, budget selected —
+ * so a dashboard's funnel report (type="funnel") can track the journey.
+ * No-op-safe, same single-owner contract as trackConversion.
  */
 export function trackEvent(name: string, properties?: Record<string, unknown>): void {
   trackConversion(name, properties);
@@ -135,5 +189,9 @@ export function trackEvent(name: string, properties?: Record<string, unknown>): 
 
 /** Whether at least one provider would actually emit (used for guardrails). */
 export function anyAnalyticsActive(cfg: AnalyticsConfig = {}): boolean {
-  return umamiScriptTag(cfg.umami) !== null || postHogScriptTag(cfg.posthog) !== null;
+  return (
+    umamiScriptTag(cfg.umami) !== null ||
+    postHogScriptTag(cfg.posthog) !== null ||
+    matomoScriptTag(cfg.matomo) !== null
+  );
 }

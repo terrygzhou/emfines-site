@@ -1,0 +1,75 @@
+# Matomo — local, self-hosted web analytics for EM Fine Studio (EMF-24).
+#
+# A LAN-only analytics box that sits alongside the public Umami provider. It is
+# NOT reachable from the internet: the site only ships its Matomo embed in a
+# LAN build (MATOMO_LAN=1), so public visitors never ping this host.
+#
+# Quick start:
+#   cd docker/matomo
+#   cp .env.example .env          # edit the passwords / base URL
+#   docker compose up -d
+#   # on first boot, open http://matomo.local:8080/install.php — the database
+#   # step is pre-filled from the environment; create the super-admin there,
+#   # then add the "emfinestudio" website (site id 1).
+#
+# Then wire it to the site:
+#   - set matomo.siteId in src/config.ts to the website's numeric ID
+#   - build the LAN flavor:  npm run build:lan   (sets POSTHOG_LAN=1 MATOMO_LAN=1)
+#   - local parity preview:  npm run preview
+#
+# Pin a major version in production (e.g. matomo/core:5) instead of latest.
+
+services:
+  matomo:
+    image: matomo/core:apache
+    container_name: matomo
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      # Published on :8080 to avoid clashing with nginx (:80). Override via
+      # MATOMO_PORT in .env if you prefer :80.
+      - "${MATOMO_PORT:-8080}:80"
+    environment:
+      # The matomo/core entrypoint auto-generates config/config.ini.php from
+      # these on first boot, so the database step of install.php is pre-filled.
+      # (There is NO admin auto-bootstrap: creating the super-admin still goes
+      # through the one-off install.php step — record those credentials in .env.)
+      - MATOMO_DB_HOST=db
+      - MATOMO_DB_PORT=3306
+      - MATOMO_DB_DATABASE=${MATOMO_DB_DATABASE:-matomo}
+      - MATOMO_DB_USER=${MATOMO_DB_USER:-matomo}
+      - MATOMO_DB_PASSWORD=${MATOMO_DB_PASSWORD:?MATOMO_DB_PASSWORD is required}
+      # Public base URL the browser uses to reach this box (LAN only).
+      - MATOMO_APP_BASEURL=${MATOMO_APP_BASEURL:-http://matomo.local:8080}
+    volumes:
+      # Persist config + uploads + logs across container recreates.
+      - matomo-data:/var/www/html
+    labels:
+      - "com.emfines.analytics=matomo"
+
+  db:
+    image: mariadb:10.11
+    container_name: matomo-db
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:?MARIADB_ROOT_PASSWORD is required}
+      # Create the app user + database up front so Matomo's auto-install has a
+      # schema it can write to.
+      - MARIADB_DATABASE=${MATOMO_DB_DATABASE:-matomo}
+      - MARIADB_USER=${MATOMO_DB_USER:-matomo}
+      - MARIADB_PASSWORD=${MATOMO_DB_PASSWORD:?MATOMO_DB_PASSWORD is required}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    labels:
+      - "com.emfines.analytics=matomo"
+
+volumes:
+  matomo-data:
+  db-data:

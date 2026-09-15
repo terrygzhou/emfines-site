@@ -1,7 +1,7 @@
 # web-analytics Specification
 
 ## Purpose
-Optional, config-driven web analytics (Umami + PostHog) that let the studio
+Optional, config-driven web analytics (Umami + PostHog + Matomo) that let the studio
 measure page engagement and enquiry conversion — off by default,
 self-hostable, privacy-first, and never able to fail the durable enquiry
 write path.
@@ -24,12 +24,16 @@ as not configured.
 - **THEN** that provider's embed is not emitted and no ping is sent
 
 ### Requirement: Providers are independently optional
-Umami and PostHog SHALL each be enableable or disableable independently;
-enabling one SHALL NOT require the other, and only configured providers'
+Umami, PostHog and Matomo SHALL each be enableable or disableable independently;
+enabling one SHALL NOT require the others, and only configured providers'
 embeds are rendered.
 #### Scenario: Only Umami active
 - **WHEN** Umami is enabled with a real credential and PostHog is disabled
 - **THEN** only the Umami embed is present in the page <head>
+#### Scenario: Only Matomo active
+- **WHEN** Matomo is enabled with a real site ID + self-hosted host and the
+  other providers are disabled
+- **THEN** only the Matomo embed is present in the page <head>
 #### Scenario: Both disabled
 - **WHEN** neither provider is enabled
 - **THEN** neither provider's embed is present in the page <head>
@@ -83,12 +87,13 @@ and its success state shown to the visitor.
 - **THEN** the call is a safe no-op, the enquiry is still stored, and the
   visitor still sees the success message
 ### Requirement: Analytics features are not duplicated across providers
-In the public build, when both Umami and PostHog are enabled, each signal SHALL
+In the public build, when more than one provider is enabled, each signal SHALL
 have a single owner so the same engagement is not counted in two dashboards:
 pageview analytics SHALL be owned by Umami (PostHog pageview / page-leave
 capture SHALL be off), and a conversion event SHALL be fired to a single
-provider (PostHog preferred, Umami as the fallback only in a Umami-only
-deployment). A conversion event SHALL NOT be captured by both providers.
+provider following a deterministic priority (PostHog, then Matomo, then Umami
+as the last-resort fallback for a Umami-only deployment). A conversion event
+SHALL NOT be captured by more than one provider.
 The LAN/local flavor is the documented exception: the owner's local PostHog
 dashboard is the complete local web-analytics view, so PostHog SHALL capture
 pageviews there (page-leave capture SHALL remain off); Umami's pageviews keep
@@ -105,6 +110,9 @@ per signal rather than compare raw totals across dashboards.
 #### Scenario: Conversion captured by one provider only
 - **WHEN** both providers are active and an enquiry is durably stored
 - **THEN** the conversion event is fired to PostHog only and is NOT also fired to Umami
+#### Scenario: Matomo owns the conversion when PostHog is absent
+- **WHEN** Matomo and Umami are active (PostHog off) and an enquiry is durably stored
+- **THEN** the conversion event is fired to Matomo only and is NOT also fired to Umami
 #### Scenario: Umami-only deployment still records conversions
 - **WHEN** Umami is enabled and PostHog is not
 - **THEN** the conversion event falls back to Umami (no loss, no duplication)
@@ -126,3 +134,22 @@ web-analytics view, while page-leave capture SHALL remain off in every flavor.
 - **THEN** every page contains both the Umami and the PostHog embed, and
   PostHog captures pageviews (capturePageview: true) plus its conversion
   events; page-leave capture stays off
+
+### Requirement: Matomo is a self-hosted, Docker-deployed, LAN-gated provider
+Matomo is run locally in Docker on the owner's LAN and is NOT reachable from
+the public internet, so the default/public build SHALL NOT emit any Matomo
+embed (no public visitor pings an unreachable host; Umami owns all public
+signals). Matomo SHALL be emitted only in an explicitly-requested LAN/local
+build (`MATOMO_LAN=1`). In that flavor Matomo SHALL record pageviews and
+conversion events in the local dashboard alongside Umami's pageviews, and
+operators SHALL read one dashboard per signal rather than compare raw totals
+across dashboards.
+#### Scenario: Public build emits no Matomo
+- **WHEN** the site is built for the public deployment (no `MATOMO_LAN` flag)
+- **THEN** no Matomo embed is present in any page, and the Umami embed is
+  still present
+#### Scenario: LAN build emits the Matomo embed
+- **WHEN** the site is built for the LAN/local flavor with `MATOMO_LAN=1`
+- **THEN** every page contains the Matomo embed pointing at the self-hosted
+  box, and pageviews + conversion events are recorded in the local Matomo
+  dashboard

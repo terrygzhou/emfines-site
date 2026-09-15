@@ -1,8 +1,9 @@
 ---
-// Web analytics (EMF-24). Renders the Umami + PostHog embed scripts, but only
-// for providers that are actually configured in `ANALYTICS` (enabled + real key).
-// With the default placeholder config, nothing is emitted — the build stays
-// clean and no third-party pings happen until the owner enables a provider.
+// Web analytics (EMF-24). Renders the Umami + PostHog + Matomo embed scripts,
+// but only for providers that are actually configured in `ANALYTICS`
+// (enabled + real credential). With the default placeholder config, nothing is
+// emitted — the build stays clean and no third-party pings happen until the
+// owner enables a provider.
 //
 // The helpers return the complete <script> tag as a string, so it is injected
 // via set:html on Astro's Fragment (no wrapper element) — wrapping it inside
@@ -15,14 +16,18 @@ import { Fragment as _Fragment } from 'astro/jsx-runtime';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Fragment: any = _Fragment;
 import { ANALYTICS } from '@/config';
-import { umamiScriptTag, postHogScriptTag } from '@/lib/analytics';
+import { umamiScriptTag, postHogScriptTag, matomoScriptTag } from '@/lib/analytics';
 
 const umami = umamiScriptTag(ANALYTICS.umami);
 const posthog = postHogScriptTag(ANALYTICS.posthog);
+const matomo = matomoScriptTag(ANALYTICS.matomo);
 ---
 {
   umami && <Fragment set:html={umami} />
 }
 {
   posthog && <Fragment set:html={posthog} />
+}
+{
+  matomo && <Fragment set:html={matomo} />
 }

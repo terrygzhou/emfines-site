@@ -16,3 +16,6 @@ analytics/
 src/generated/
 .wrangler-local/
 .pi/
+
+# Matomo local deployment: real credentials stay out of git (see .env.example).
+docker/matomo/.env
