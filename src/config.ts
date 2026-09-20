@@ -19,19 +19,24 @@ export const SITE = {
 //              conversions. Owns all public-build signals.
 //   PostHog -> conversion events + pageviews in the LAN build (local dashboard =
 //              complete local web-analytics view); public builds ship no PostHog tag.
-//   Matomo  -> self-hosted, Docker-deployed page + event analytics, LAN/local only;
-//              public builds ship no Matomo tag.
+//   Matomo  -> self-hosted page + event analytics, LIVE on every build. The box
+//              is publicly reachable via the Cloudflare tunnel
+//              matomo.eywalink.org (like the Umami tunnel), so the tracker
+//              ships to public visitors and LAN builds alike.
 //
-// Build-time gate (LAN-only PostHog + Matomo):
-//   The self-hosted PostHog (posthog.local) and Matomo (matomo.local / local
-//   Docker) boxes are reachable ONLY on the owner's LAN and are NOT reachable
-//   from public visitors. PostHog is therefore enabled ONLY when a build is made
-//   with `POSTHOG_LAN=1`, and Matomo ONLY with `MATOMO_LAN=1`:
-//       public (default): npm run build                      -> both LAN providers off
-//       LAN / local:      POSTHOG_LAN=1 MATOMO_LAN=1 build   -> both LAN providers on
-//   (they are independent — set either/both to taste; `build:lan` sets both.)
-//   The public build keeps Umami owning all signals, so there is no duplication
-//   and no broken pings to an unreachable host.
+// Build-time gate (LAN-only PostHog):
+//   The self-hosted PostHog (posthog.local) box is reachable ONLY on the owner's
+//   LAN and is NOT reachable from public visitors. PostHog is therefore enabled
+//   ONLY when a build is made with `POSTHOG_LAN=1`:
+//       public (default): npm run build                      -> PostHog off
+//       LAN / local:      POSTHOG_LAN=1 [MATOMO_LAN=1] build -> PostHog on
+//   `build:lan` sets POSTHOG_LAN=1 MATOMO_LAN=1 — the MATOMO_LAN flag is now a
+//   no-op for Matomo (always enabled) but is kept so the existing build script
+//   keeps working.
+//   Umami still owns all pageview signals in every build; Matomo adds a
+//   self-hosted second pageview/event stream in every build (accepted: two
+//   providers, both reading the same visits — no conversion duplication,
+//   because conversions are single-owner via trackConversion).
 //
 //   Each flavor is a Vite `define` literal (`__POSTHOG_LAN__`, `__MATOMO_LAN__`)
 //   baked in at build time: astro.config.mjs reads the real `process.env`
@@ -71,7 +76,8 @@ export const ANALYTICS: {
     //       silently killing analytics for real visitors.
     //   LAN build (localBuild)  -> the local Umami on the office box directly.
     //       LAN viewing is http-only, so no mixed-content issue, and `pop-os`
-    //       resolves on the office network.
+    //       resolves on the office network. (localBuild stays a PostHog-LAN
+    //       marker only — Matomo is always on, so it does not factor in.)
     host: localBuild ? 'http://pop-os:3102' : 'https://umami.eywalink.org',
     // Subresource-Integrity pin for `${host}/script.js` (harden-site-security). Computed
     // with `node scripts/umami-integrity.mjs` (public host, 2026-09-11). Until set to a
@@ -101,22 +107,23 @@ export const ANALYTICS: {
     capturePageLeave: false,
   },
   matomo: {
-    // LAN-ONLY (self-hosted Docker): enabled only for `MATOMO_LAN=1` builds
-    // (see gate above). The default/public build leaves this false, so no Matomo
-    // tag ships publicly (a local Docker box is unreachable from the internet,
-    // and a public ping to it would be a broken/mixed-content request) and Umami
-    // owns all public signals there (no duplication).
-    enabled: matomoLan,
-    // Matomo site ID (Administration → Websites). The first site created by the
-    // local Docker install is typically `1`; confirm in the Matomo admin UI and
-    // set this to that numeric ID (as a string).
-    siteId: '1',
-    // Base URL of the self-hosted Matomo box (LAN only, no trailing slash).
-    // Matches docker/matomo's default deploy (`MATOMO_PORT=8080` →
-    // `http://matomo.local:8080`, see .env.example); add a `matomo.local`
-    // /etc/hosts entry on the LAN. If you change MATOMO_PORT, keep this in
-    // sync. Only ever shipped in a LAN build (enabled), never publicly.
-    host: 'http://matomo.local:8080',
+    // LIVE on every build: self-hosted Matomo 5.13.0 box (project
+    // `matomo-src`, Docker `matomo` container, PHP 8.2 FPM + nginx) exposed
+    // publicly via the Cloudflare tunnel `matomo.eywalink.org` → container
+    // port 3104 — the same public-tunnel pattern as Umami. `enabled` is true
+    // unconditionally; the `MATOMO_LAN` flag no longer gates it (kept in the
+    // build script only for the PostHog LAN gate). No mixed-content issue:
+    // the tunnel is HTTPS.
+    enabled: true,
+    // Matomo site ID (Administration → Websites) for emfinestudio.com.
+    // Site 3, created 2026-09-20 in the running box (sites 1 = eywalink.org,
+    // 2 = terrygzhou.github.io).
+    siteId: '3',
+    // Public base URL of the Matomo box (no trailing slash). The embed script
+    // is fetched from `${host}/matomo.js` by the visitor's browser, so it
+    // MUST be reachable from where the page is viewed — the Cloudflare tunnel
+    // is the public HTTPS endpoint (like Umami's umami.eywalink.org).
+    host: 'https://matomo.eywalink.org',
   },
 };
 

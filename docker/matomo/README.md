@@ -1,20 +1,34 @@
-# Matomo — local web analytics (self-hosted in Docker)
+# Matomo — web analytics (self-hosted, public via tunnel)
 
-A LAN-only analytics box that runs alongside the public **Umami** provider.
-The site ships its Matomo embed **only in a LAN build** (`MATOMO_LAN=1`), so
-public visitors never send pings to this host — it is not reachable from the
-internet by design.
+> **Superseded for emfinestudio.com** — the site now ships its Matomo embed in
+> **every build** (public + LAN), pointed at the running Matomo box in
+> `/home/terry/projects/matomo-src` (project `matomo-src`, Docker container
+> `matomo`, image `matomo-local:5.13.0`, PHP 8.2 FPM + nginx, Matomo 5.13.0,
+> published `0.0.0.0:3104->80`), exposed publicly via the Cloudflare tunnel
+> `matomo.eywalink.org` (the same public-tunnel pattern as Umami).
+>
+> The site for emfinestudio.com is **site 3** (created 2026-09-20):
+> `https://emfinestudio.com`, timezone `Australia/Melbourne`, currency AUD.
+> Existing sites in that box: 1 = eywalink.org, 2 = terrygzhou.github.io.
+>
+> `src/config.ts` → `matomo.enabled: true`, `siteId: '3'`,
+> `host: 'https://matomo.eywalink.org'`. The `MATOMO_LAN` build flag no longer
+> gates Matomo (it only remains in `build:lan` for the PostHog LAN gate).
+>
+> This compose stack is kept for reference / standalone local testing —
+> it is **not** the stack the site talks to.
 
 ## What it does
 
 - Records pageviews + conversion events (`enquiry_submitted`, funnel steps)
-  in a local Matomo dashboard.
-- Sits next to Umami: Umami owns the **public** build's pageviews/conversions;
-  this box is a complete **local** view you read on the owner's machine.
+  in a Matomo dashboard.
+- Sits next to Umami: Umami owns the cookieless pageview/conversion signal
+  (its strength, DNT-friendly); Matomo is a self-hosted second stream the
+  owner can read locally and publicly.
 - No PII: the embed sends only page paths, referrers, and anonymous event
   names — same privacy contract as Umami.
 
-## Quick start
+## Quick start (standalone / reference)
 
 ```bash
 cd docker/matomo
@@ -39,21 +53,17 @@ real LAN IP/FQDN.
 1. `src/config.ts` → `matomo.siteId` = the website's numeric ID (string).
    `matomo.host` = the box base URL, no trailing slash (default
    `http://matomo.local:8080`; update to match `.env`).
-2. Build the LAN flavor (both local providers on):
+2. Build any flavor:
    ```bash
-   npm run build:lan        # = POSTHOG_LAN=1 MATOMO_LAN=1 astro build
-   # or just Matomo:        MATOMO_LAN=1 npm run build
+   npm run build          # Matomo ships in every build
+   npm run build:lan      # also enables the LAN-only PostHog embed
    ```
 3. Local parity preview (local KV + assets, email no-ops):
    ```bash
    npm run preview
    ```
-   The page's Matomo embed points at your local box; open the Matomo
+   The page's Matomo embed points at the public tunnel; open the Matomo
    dashboard to watch pageviews + enquiry conversions land.
-
-> The **public** build (`npm run build`) leaves Matomo (and PostHog) off —
-> Umami owns every public signal, and no tag ships to a host the public
-> internet cannot reach.
 
 ## Data & lifecycle
 

@@ -20,15 +20,18 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     // Web analytics (EMF-24) — build-time flavor. The self-hosted PostHog box
-    // (posthog.local) and the self-hosted Matomo box (matomo.local / local
-    // Docker) are reachable only on the owner's LAN, so each is enabled ONLY in
-    // the matching LAN/local build. We compute each flavor here (astro.config
-    // runs in real Node with the real process.env) and bake it into every bundle
-    // as a Vite `define` literal, so the compiled config.ts always sees a
-    // deterministic value — no reliance on process.env surviving Vite's
-    // client/SSR env shims (which would otherwise always read `{}`).
-    //   public (default): npm run build                      -> both LAN flags false
-    //   LAN / local:      POSTHOG_LAN=1 MATOMO_LAN=1 build   -> both LAN flags true
+    // (posthog.local) is reachable only on the owner's LAN, so it is enabled
+    // ONLY in the matching LAN/local build. Matomo (matomo.eywalink.org,
+    // Cloudflare tunnel) is public and enabled in every build — the
+    // __MATOMO_LAN__ define is kept only because `build:lan` still sets
+    // MATOMO_LAN=1 alongside POSTHOG_LAN=1; config.ts now ignores it.
+    // We compute each flavor here (astro.config runs in real Node with the
+    // real process.env) and bake it into every bundle as a Vite `define`
+    // literal, so the compiled config.ts always sees a deterministic value —
+    // no reliance on process.env surviving Vite's client/SSR env shims
+    // (which would otherwise always read `{}`).
+    //   public (default): npm run build                      -> PostHog off
+    //   LAN / local:      POSTHOG_LAN=1 [MATOMO_LAN=1] build  -> PostHog on
     //   (independent: set either/both to taste; `npm run build:lan` sets both)
     define: {
       __POSTHOG_LAN__: JSON.stringify(
