@@ -56,6 +56,9 @@ export const UI_ASSETS: ReadonlySet<string> = new Set([
   'logo.png',
   'repairs-bench-tools-01.jpg',
   'repairs-pearl-restrans-01.jpg',
+  'pieces-clasps-lobster.jpg',
+  'pieces-clasps-mixed.jpg',
+  'studio-img-1.jpg',
 ]);
 
 const HEADER_COLUMNS = [
