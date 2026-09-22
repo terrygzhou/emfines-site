@@ -9,20 +9,26 @@ const groups = groupByCategory(assets);
 // then round-robin so tall and wide images alternate evenly.
 // Returns items tagged with size: 'large' (landscape) or 'small' (portrait/square).
 function interleave(items: typeof assets) {
-  if (items.length < 4) return items;
-  const portrait: Array<{ it: (typeof items)[number]; large: boolean }> = [];
-  const square: Array<{ it: (typeof items)[number]; large: boolean }> = [];
-  const landscape: Array<{ it: (typeof items)[number]; large: boolean }> = [];
-  for (const it of items) {
+  const tagged = items.map((it) => {
     const r = it.width && it.height ? it.width / it.height : 1.5;
-    const entry = { it, large: r > 1.05 };
-    if (r < 0.95) portrait.push(entry);
-    else if (r > 1.05) landscape.push(entry);
-    else square.push(entry);
-  }
+    return { it, large: r > 1.05 };
+  });
+  if (tagged.length < 4) return tagged;
+  const portrait = tagged.filter((t) => {
+    const r = t.it.width && t.it.height ? t.it.width / t.it.height : 1.5;
+    return r < 0.95;
+  });
+  const square = tagged.filter((t) => {
+    const r = t.it.width && t.it.height ? t.it.width / t.it.height : 1.5;
+    return r >= 0.95 && r <= 1.05;
+  });
+  const landscape = tagged.filter((t) => {
+    const r = t.it.width && t.it.height ? t.it.width / t.it.height : 1.5;
+    return r > 1.05;
+  });
   // Round-robin: portrait, square, landscape, portrait, square, landscape…
   const buckets = [portrait, square, landscape];
-  const out: Array<{ it: (typeof items)[number]; large: boolean }> = [];
+  const out: typeof tagged = [];
   let maxLen = 0;
   for (const b of buckets) maxLen = Math.max(maxLen, b.length);
   for (let i = 0; i < maxLen; i++) {
