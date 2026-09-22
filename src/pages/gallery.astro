@@ -6,29 +6,21 @@ import { groupByCategory } from '@/lib/gallery';
 const groups = groupByCategory(assets);
 
 // Interleave: split by aspect-ratio into portrait / square / landscape buckets,
-// then round-robin so tall and wide images alternate evenly.
-// Returns items tagged with size: 'large' (landscape) or 'small' (portrait/square).
+// then round-robin through them so tall and wide images alternate evenly.
 function interleave(items: typeof assets) {
-  const tagged = items.map((it) => {
+  if (items.length < 4) return items;
+  const portrait: typeof items = [];
+  const square: typeof items = [];
+  const landscape: typeof items = [];
+  for (const it of items) {
     const r = it.width && it.height ? it.width / it.height : 1.5;
-    return { it, large: r > 1.05 };
-  });
-  if (tagged.length < 4) return tagged;
-  const portrait = tagged.filter((t) => {
-    const r = t.it.width && t.it.height ? t.it.width / t.it.height : 1.5;
-    return r < 0.95;
-  });
-  const square = tagged.filter((t) => {
-    const r = t.it.width && t.it.height ? t.it.width / t.it.height : 1.5;
-    return r >= 0.95 && r <= 1.05;
-  });
-  const landscape = tagged.filter((t) => {
-    const r = t.it.width && t.it.height ? t.it.width / t.it.height : 1.5;
-    return r > 1.05;
-  });
-  // Round-robin: portrait, square, landscape, portrait, square, landscape…
+    if (r < 0.95) portrait.push(it);
+    else if (r > 1.05) landscape.push(it);
+    else square.push(it);
+  }
+  // Order: portrait, square, landscape, portrait, square, landscape…
   const buckets = [portrait, square, landscape];
-  const out: typeof tagged = [];
+  const out: typeof items = [];
   let maxLen = 0;
   for (const b of buckets) maxLen = Math.max(maxLen, b.length);
   for (let i = 0; i < maxLen; i++) {
@@ -77,46 +69,38 @@ export const prerender = true;
       </div>
 
       {groups.map((g) => {
-        const entries = interleave(g.items);
+        const items = interleave(g.items);
         return (
           <section data-gallery-section={g.category} class="mb-14 last:mb-0">
             <h2 class="text-[26px] mb-6 flex items-baseline gap-3">
               {g.category} <span class="text-base text-muted align-super">{g.items.length}</span>
             </h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-min">
-              {entries.map(({ it, large }) => (
-                  <figure
-                    class:list={[
-                      'm-0 border border-line bg-bg overflow-hidden flex flex-col items-center',
-                      large ? 'col-span-2' : ''
-                    ]}
-                  >
-                    <div class="w-full flex justify-center">
-                      {it.width && it.height ? (
+            <div class="columns-2 md:columns-3 xl:columns-4 gap-4 [column-gap:16px]">
+              {items.map((item) => (
+                  <figure class="m-0 mb-4 break-inside-avoid border border-line bg-bg overflow-hidden">
+                    {item.width && item.height ? (
+                      <img
+                        src={item.src}
+                        width={item.width}
+                        height={item.height}
+                        loading="lazy"
+                        decoding="async"
+                        alt={item.description}
+                        class="w-full h-auto block"
+                      />
+                    ) : (
+                      <div class="aspect-[3/2] overflow-hidden">
                         <img
-                          src={it.src}
-                          width={it.width}
-                          height={it.height}
+                          src={item.src}
                           loading="lazy"
                           decoding="async"
-                          alt={it.description}
-                          class:list={[
-                            'h-auto block',
-                            large ? 'max-w-full' : 'max-w-[70%] md:max-w-[60%] xl:max-w-[55%]'
-                          ]}
+                          alt={item.description}
+                          class="w-full h-full object-cover"
                         />
-                      ) : (
-                        <img
-                          src={it.src}
-                          loading="lazy"
-                          decoding="async"
-                          alt={it.description}
-                          class="max-w-[70%] h-auto block"
-                        />
-                      )}
-                    </div>
-                    <figcaption class="w-full px-3 py-2.5 text-xs text-muted border-t border-line leading-snug text-center">
-                      {it.description}
+                      </div>
+                    )}
+                    <figcaption class="px-3 py-2.5 text-xs text-muted border-t border-line leading-snug">
+                      {item.description}
                     </figcaption>
                   </figure>
               ))}
