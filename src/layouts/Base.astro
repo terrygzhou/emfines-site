@@ -83,7 +83,7 @@ const jsonLd = {
     <meta name="twitter:image" content={socialImage} />
     <!-- Structured data (JSON-LD) -->
     <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
-    <!-- Web analytics (Umami + PostHog) — no-op unless enabled in src/config.ts -->
+    <!-- Web analytics (Umami + Matomo) — no-op unless enabled in src/config.ts -->
     <Analytics />
   </head>
   <body>

@@ -77,16 +77,15 @@ Deploys to the stable URL `https://emfines-site.terry-g-zhou.workers.dev` (free 
   `studio@emfines.com.au` + "Box Hill South, VIC". Replace with the studio's real details
   when supplied. Logos are out of scope (the site uses the "EM Fine Studio" serif wordmark).
 
-## Web analytics (Umami + PostHog + Matomo)
+## Web analytics (Umami + Matomo)
 
 The site ships an optional, config-driven analytics layer
 (`src/components/Analytics.astro` → `src/lib/analytics.ts`, config in
-`src/config.ts`). Three providers are supported, each independently on/off:
+`src/config.ts`). Two providers are supported, each independently on/off:
 
 | Provider | What it does | Enable when |
 |---|---|---|
 | **Umami** | Lightweight, cookieless, GDPR-friendly page analytics | you want minimal, privacy-first pageviews |
-| **PostHog** | Pageviews + custom event capture (incl. enquiry submissions) | you want funnels/event product analytics |
 | **Matomo** | Self-hosted (Docker) page + event analytics; a fully local dashboard | you want a self-hosted, LAN-local analytics view |
 
 **Default is off.** With the placeholder config, the build emits no analytics
@@ -95,9 +94,8 @@ pings. To activate a provider you set its real key in `src/config.ts` and flip
 
 ```ts
 export const ANALYTICS = {
-  umami:   { enabled: true, websiteId: '<Umami Website ID>', host: 'https://cloud.umami.is' },
-  posthog: { enabled: true, apiKey: 'phc_<project api key>', host: 'https://us.posthog.com' },
-  matomo:  { enabled: true, siteId: '<Matomo site ID>', host: 'http://matomo.local:8080' }, // LAN-only
+  umami:  { enabled: true, websiteId: '<Umami Website ID>', host: 'https://cloud.umami.is' },
+  matomo: { enabled: true, siteId: '<Matomo site ID>', host: 'http://matomo.local:8080' }, // LAN-only
 };
 ```
 
@@ -105,15 +103,10 @@ export const ANALYTICS = {
   self-host — set `host` to your instance URL) → copy the **Website ID** →
   paste into `umami.websiteId`. The embed sets `data-do-not-track` so it skips
   visitors who send Do Not Track.
-- **PostHog:** create a project in [PostHog](https://posthog.com) → copy the
-  **Project API key** (`phc_…`) → paste into `posthog.apiKey`. Keep `host`
-  matching the project's data region (`https://us.posthog.com` or
-  `https://eu.posthog.com`).
 - **Matomo:** run the local box with `docker compose` in `docker/matomo/`
   (self-hosted, LAN-only) → note the **website ID** (Administration →
   Websites) → paste into `matomo.siteId`; set `matomo.host` to the box base
-  URL (no trailing slash). Matomo only ships in a LAN build
-  (`MATOMO_LAN=1`), so the public site never pings the local box.
+  URL (no trailing slash).
 
 Neither value is a secret (both are public, client-side keys), so they live in
 the committed config — no wrangler secret needed. No PII is sent: only page

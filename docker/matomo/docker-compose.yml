@@ -14,7 +14,7 @@
 #
 # Then wire it to the site:
 #   - set matomo.siteId in src/config.ts to the website's numeric ID
-#   - build the LAN flavor:  npm run build:lan   (sets POSTHOG_LAN=1 MATOMO_LAN=1)
+#   - build the LAN flavor:  npm run build:lan   (sets MATOMO_LAN=1)
 #   - local parity preview:  npm run preview
 #
 # Pin a major version in production (e.g. matomo/core:5) instead of latest.

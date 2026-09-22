@@ -12,8 +12,8 @@
 > Existing sites in that box: 1 = eywalink.org, 2 = terrygzhou.github.io.
 >
 > `src/config.ts` → `matomo.enabled: true`, `siteId: '3'`,
-> `host: 'https://matomo.eywalink.org'`. The `MATOMO_LAN` build flag no longer
-> gates Matomo (it only remains in `build:lan` for the PostHog LAN gate).
+> `host: 'https://matomo.eywalink.org'`. Matomo ships in every build; the
+> `MATOMO_LAN` build flag only switches the Umami host to the LAN box.
 >
 > This compose stack is kept for reference / standalone local testing —
 > it is **not** the stack the site talks to.
@@ -56,7 +56,7 @@ real LAN IP/FQDN.
 2. Build any flavor:
    ```bash
    npm run build          # Matomo ships in every build
-   npm run build:lan      # also enables the LAN-only PostHog embed
+   npm run build:lan      # LAN flavor: Umami targets the local box
    ```
 3. Local parity preview (local KV + assets, email no-ops):
    ```bash

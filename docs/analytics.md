@@ -4,7 +4,7 @@ All sites feed ONE shared, locally-hosted Umami dashboard.
 
 ## Hosts
 - **LAN dashboard (source of truth):** `http://pop-os:3102` — LAN-only, http-only,
-  not internet-reachable. Used by `POSTHOG_LAN=1` builds.
+  not internet-reachable. Used by `MATOMO_LAN=1` builds.
 - **Public endpoint per site:** an HTTPS URL (e.g. a Cloudflare tunnel) that real
   visitors can reach. A plain LAN `http://` URL can't serve internet visitors
   (mixed-content block + hostname unresolvable off-LAN), so public builds always
@@ -13,7 +13,7 @@ All sites feed ONE shared, locally-hosted Umami dashboard.
 ## Per-site config (`src/config.ts` → `ANALYTICS.umami`)
 - **`host` is build-flavored:**
   - public build (default)  → the site's public HTTPS endpoint
-  - LAN build (`POSTHOG_LAN=1`) → `http://pop-os:3102`
+  - LAN build (`MATOMO_LAN=1`) → `http://pop-os:3102`
 - **`websiteId` is PER SITE.** Each site has its own "Website" in the shared Umami
   instance so traffic never mixes. Create it in Umami
   (`Websites → New Website`, set the site's domain) and paste the UUID here.
@@ -23,7 +23,7 @@ All sites feed ONE shared, locally-hosted Umami dashboard.
 
 ## Verify
 Open `http://pop-os:3102/websites` and confirm the site is there; pageviews appear
-after a `POSTHOG_LAN=1` build and a local page view.
+after a `MATOMO_LAN=1` build and a local page view.
 
 ## Funnels (customer journey)
 
@@ -36,7 +36,7 @@ Two funnel reports live in the shared Umami instance (type `funnel`, 60-min step
 
 The conversion events fire from the form success handlers
 (`src/scripts/enquiry-form.ts`, `src/scripts/contact-form.ts`) via
-`trackConversion()` in `src/lib/analytics.ts` — single-owner rule: PostHog owns
+`trackConversion()` in `src/lib/analytics.ts` — single-owner rule: Matomo owns
 events when present, Umami is the fallback. No PII is sent (only path + event name).
 
 **View the live funnel:** `http://pop-os:3102/websites/<site-id>/reports` → pick
