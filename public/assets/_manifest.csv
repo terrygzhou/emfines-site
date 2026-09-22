@@ -1,56 +1,56 @@
 group,old_name,new_name,category,design,description,width,height,bytes
-hash,0de778a94978cea822d5f43df6172ad2.jpg,necklace-ornate-01.jpg,necklace,ornate,"18ct gold necklace, small intricate pendant, grey bg with dried flowers",1600,1067,478563
-hash,2392d3d556bb5a1ef13b09950609656f.jpg,pendant-mask-01.jpg,pendant,mask-sapphire,"mask/face pendant, blue gem on forehead, with dangling earrings, teal box",1600,1067,198835
-hash,2b0b7983e717b3b8667303497718ee1c.jpg,necklace-heart-01.jpg,necklace,heart,"heart necklace, red gem + natural diamond cluster, grey bg",1600,1067,176154
-hash,569d8d5aaab3f884e21b17750fdadd32.jpg,earring-starburst-01.jpg,earring,starburst-pearl,18ct gold starburst earrings with natural sea pearl and small natural diamond,1600,1200,211745
-hash,788776ccb5e8bc29e3859d82540e2a67.jpg,necklace-pearl-01.jpg,necklace,pearl,"18ct gold necklace, large round natural sea pearl pendant, wooden stand",1440,1080,146502
-hash,7e0e2f79ef9c422e2ddfe5a0ecdaae1d.jpg,earring-pearl-01.jpg,earring,pearl-irregular,"earrings, large irregular white natural sea pearl + small natural diamond, brown surface",1600,1200,245325
-hash,7e508692a92869912d2e157d8400b1b0.jpg,ring-red-01.jpg,ring,red-stone,"18ct gold ring, central red gem with natural diamond halo, teal velvet box",1600,1067,116268
-hash,7fc32d398cc4d8a663022f3762088eaa.jpg,pendant-teardrop-01.jpg,pendant,teardrop-pearl,"pendant, large white teardrop stone with pink gem accent, held by tweezers",1600,1163,142562
-hash,95218cf7f06cc6e0528783336c3d0b03.jpg,earring-pearl-dark-01.jpg,earring,pearl-dark,"earrings, clusters of dark irregular natural sea pearl + natural diamond",1600,1200,188752
-hash,b82f5b09a53fd0428cf64cca2206a334.jpg,necklace-strawberry-01.jpg,necklace,strawberry,"strawberry pendant, red gemstones + green leaves, grey bg",1600,1067,181597
-hash,ba781111a765ad1a1ca23c103e7546b5.jpg,ring-diamond-01.jpg,ring,diamond-cluster,"18ct gold ring, natural diamond cluster, teal velvet box with dried flowers",1600,1067,256080
-hash,ca0412818c1770a28612a36c0ffbefd0.jpg,earring-pearl-02.jpg,earring,pearl-irregular,"earrings, clusters of white irregular natural sea pearl + natural diamond",1600,1200,176262
-hash,d04049d82fb7ad1d8c884fd638c9ee3b.jpg,necklace-leaf-01.jpg,necklace,leaf-emerald,"18ct gold necklace, leaf pendant with green gemstones, grey surface",1600,1067,146252
-hash,d99751dea8d53f6759b7c22f175d7d4b.jpg,pendant-leaf-01.jpg,pendant,leaf-diamond,jade leaf pendant in milky white stone with two marquise natural diamond at the bail,1355,1600,160893
-hash,e039a49c3c77b696badc1c87fe77b7ff.jpg,ring-twist-01.jpg,ring,twist-band,"18ct gold twisted-band ring, teal velvet box with dried flowers",1600,1067,248035
-hash,e0b651216a64e085bd2d3d75af49d03d.jpg,earring-starburst-02.jpg,earring,starburst-pearl,18ct gold starburst earrings with natural sea pearl and small natural diamond,1600,1200,255139
-hash,e4ad5fc524f6de113c92712cb31730a2.jpg,ring-sapphire-01.jpg,ring,sapphire-halo,"18ct gold ring, central blue gem with natural diamond halo, cream box",1600,1067,111792
-hash,ea4db5c479122d643779e064759a1299.jpg,necklace-flower-01.jpg,necklace,flower-pink,"18ct gold necklace, flower pendant with pink gem, black bg",1600,1176,283687
-phone,IMG_3669.JPG,pendant-opal-01.jpg,pendant,opal-oval,"hand holding oval blue-green opal pendant, 18ct gold frame, natural diamond border",1600,1200,273230
-phone,IMG_8520.JPG,ring-pink-oval-01.jpg,ring,pink-oval,hand holding oval pink gem (tourmaline) ring with natural diamond halo,1600,1200,263133
-phone,IMG_8521.JPG,ring-pink-oval-02.jpg,ring,pink-oval,"same ring, side profile, intricate 18ct gold band",1600,1200,248198
-phone,IMG_8522.JPG,ring-pink-round-01.jpg,ring,pink-round,"hand holding round pink gem ring, 18ct gold band, natural diamond halo",1600,1200,274435
+hash,0de778a94978cea822d5f43df6172ad2.jpg,necklace-ornate.jpg,necklace,ornate,"small intricate pendant necklace, grey background with dried flowers",1600,1067,478563
+hash,2392d3d556bb5a1ef13b09950609656f.jpg,pendant-mask.jpg,pendant,mask-sapphire,"mask/face pendant, blue gem on forehead, with dangling earrings, teal box",1600,1067,198835
+hash,2b0b7983e717b3b8667303497718ee1c.jpg,necklace-heart.jpg,necklace,heart,"heart necklace, red gem with diamond cluster, grey background",1600,1067,176154
+hash,569d8d5aaab3f884e21b17750fdadd32.jpg,earring-starburst-01.jpg,earring,starburst-pearl,starburst earrings with sea pearl and small diamond,1600,1200,211745
+hash,788776ccb5e8bc29e3859d82540e2a67.jpg,necklace-pearl.jpg,necklace,pearl,"necklace, large round sea pearl pendant, wooden stand",1440,1080,146502
+hash,7e0e2f79ef9c422e2ddfe5a0ecdaae1d.jpg,earring-pearl-01.jpg,earring,pearl-irregular,"earrings, large irregular white sea pearl with small diamond, brown surface",1600,1200,245325
+hash,7e508692a92869912d2e157d8400b1b0.jpg,ring-red.jpg,ring,red-stone,"ring, central red gem with diamond halo, teal velvet box",1600,1067,116268
+hash,7fc32d398cc4d8a663022f3762088eaa.jpg,pendant-teardrop.jpg,pendant,teardrop-pearl,"pendant, large white teardrop stone with pink gem accent, held by tweezers",1600,1163,142562
+hash,95218cf7f06cc6e0528783336c3d0b03.jpg,earring-pearl-dark.jpg,earring,pearl-dark,"earrings, clusters of dark irregular sea pearls with diamonds",1600,1200,188752
+hash,b82f5b09a53fd0428cf64cca2206a334.jpg,necklace-strawberry.jpg,necklace,strawberry,"strawberry pendant, red gemstones with green leaves, grey background",1600,1067,181597
+hash,ba781111a765ad1a1ca23c103e7546b5.jpg,ring-diamond.jpg,ring,diamond-cluster,"ring, diamond cluster, teal velvet box with dried flowers",1600,1067,256080
+hash,ca0412818c1770a28612a36c0ffbefd0.jpg,earring-pearl-02.jpg,earring,pearl-irregular,"earrings, clusters of white irregular sea pearls with diamonds",1600,1200,176262
+hash,d04049d82fb7ad1d8c884fd638c9ee3b.jpg,necklace-leaf.jpg,necklace,leaf-emerald,"necklace, leaf pendant with green gemstones, grey surface",1600,1067,146252
+hash,d99751dea8d53f6759b7c22f175d7d4b.jpg,pendant-leaf.jpg,pendant,leaf-diamond,jade leaf pendant in milky white stone with two marquise diamonds at the bail,1355,1600,160893
+hash,e039a49c3c77b696badc1c87fe77b7ff.jpg,ring-twist.jpg,ring,twist-band,"twisted-band ring, teal velvet box with dried flowers",1600,1067,248035
+hash,e0b651216a64e085bd2d3d75af49d03d.jpg,earring-starburst-02.jpg,earring,starburst-pearl,starburst earrings with sea pearl and small diamond,1600,1200,255139
+hash,e4ad5fc524f6de113c92712cb31730a2.jpg,ring-sapphire.jpg,ring,sapphire-halo,"ring, central blue gem with diamond halo, cream box",1600,1067,111792
+hash,ea4db5c479122d643779e064759a1299.jpg,necklace-flower-01.jpg,necklace,flower-pink,"necklace, flower pendant with pink gem, black background",1600,1176,283687
+phone,IMG_3669.JPG,pendant-opal.jpg,pendant,opal-oval,hand holding oval blue-green opal pendant with diamond border,1600,1200,273230
+phone,IMG_8520.JPG,ring-pink-oval-01.jpg,ring,pink-oval,hand holding oval pink gem ring with diamond halo,1600,1200,263133
+phone,IMG_8521.JPG,ring-pink-oval-02.jpg,ring,pink-oval,"same ring, side profile, intricate band",1600,1200,248198
+phone,IMG_8522.JPG,ring-pink-round.jpg,ring,pink-round,hand holding round pink gem ring with diamond halo,1600,1200,274435
 phone,IMG_8524.JPG,ring-pink-oval-03.jpg,ring,pink-oval,"same oval ring, inside view with engraved band",1600,1200,222955
-phone,IMG_9437.JPG,necklace-bird-01.jpg,necklace,bird-enamel,"18ct gold necklace, bird pendant with pink/green enamel, black bg",1200,1600,504180
-phone,IMG_9726.JPG,display-box-01.jpg,display,box-pendants,grey presentation box with small pendants + earrings,1200,1600,560085
+phone,IMG_9437.JPG,necklace-bird.jpg,necklace,bird-enamel,"necklace, bird pendant with pink/green enamel, black background",1200,1600,504180
+phone,IMG_9726.JPG,display-box-01.jpg,display,box-pendants,grey presentation box with small pendants and earrings,1200,1600,560085
 phone,IMG_9734.JPG,display-box-02.jpg,display,box-pendants,top-down of same presentation box,1200,1600,508067
-png,27F638EF-0E9E-47F8-9764-79ACCC488C3D.png,ring-flower-01.jpg,ring,flower-pink,"close-up flower ring, pink centre, natural diamond petals, worn on finger",1086,1448,199795
-png,2D7E3BDF-7CB3-4612-A874-73675DFD9BFA.png,pendant-pearl-leaf-01.jpg,pendant,pearl-leaf,"18ct gold pendant, large white natural sea pearl in leaf + natural diamond design",1086,1448,188316
-png,3ED062ED-006E-4963-BD85-8ED4870129F1.png,necklace-floral-01.jpg,necklace,floral-ruby,"18ct gold necklace, floral/starburst pendant, red + white stones",1086,1448,136604
-png,47AFEA8C-EA6F-4072-8426-4E91497AFA0A.png,jade-leaf-01.jpg,jade,leaf,leaf pendant in milky white stone with green inclusions (jade),1178,1335,119591
-png,49DD083C-7E17-4DEA-B342-3C7193CCF915.png,necklace-flower-01.jpg,necklace,flower-pink,"18ct gold chain, white flower pendant with pink centre",1600,1176,283687
-png,4A3AD6CF-CE77-40A4-8233-4DE229D9F195.png,jade-bean-01.jpg,jade,bean,"pendant carved from green/white jade, bean/gourd shape",1536,1024,54562
-png,4E858894-603E-4CC4-A0CE-8DEEC75DA5CF.png,brooch-sprig-01.jpg,brooch,sprig-pearl,"18ct gold sprig brooch, leaves, natural diamond, one white natural sea pearl",1086,1448,136245
-png,6ACDFC20-B6F1-480E-B729-7FAA7DC6CC80.png,pendant-lantern-01.jpg,pendant,lantern-ruby,18ct gold lantern/cage pendant with red gemstones + natural diamond,1086,1448,187859
-png,7061C721-5FD8-4C69-A650-F62D247A4B3B.png,necklace-v-ruby-01.jpg,necklace,v-ruby,"18ct gold necklace, V-shaped pendant with red gemstones + natural diamond",986,1315,88704
-png,7C8B53D9-04C0-44B0-B049-39C1F4592B21.png,brooch-pearl-leaf-01.jpg,brooch,pearl-leaf,"18ct gold brooch, large white natural sea pearl with leaves + natural diamond",1086,1448,194783
-png,9E8D8B8B-5E97-41E8-B0AA-A266D51B6183.png,necklace-set-01.jpg,necklace,set-three,"three 18ct gold necklaces with different pendants: red cluster, square ruby, red leaf",1086,1448,327279
-png,A89AC3D1-70B1-4377-AAEF-D38AE1205615.png,necklace-leaf-heart-01.jpg,necklace,leaf-heart,"18ct gold necklace, leaf + heart pendant with natural diamond and natural sea pearl",1122,1402,303713
-png,AF6D266A-1F83-43D1-8C84-70E7062F7DF1.png,pendant-lattice-01.jpg,pendant,lattice-amethyst,"18ct gold pendant, geometric lattice, central purple gem, green accents",1086,1448,208900
-png,C5E5E456-1FD7-4149-BFD5-160D479E8DE5.png,pendant-seahorse-01.jpg,pendant,seahorse,18ct gold seahorse pendant encrusted with small natural diamond,1402,1122,169881
-png,D10BC367-F909-4FEB-B61C-BCF59B967154.png,necklace-pearl-drop-01.jpg,necklace,leaf-pearl-drop,"18ct gold necklace, leaf pendant with large white natural sea pearl drop",1086,1448,273102
-png,D2EE0528-2A00-4719-9922-12D7F757FB95.png,jade-set-01.jpg,jade,set-four,"collection of four jade/stone pendants: green, white, blue-green",1536,1024,155559
-png,E4887758-95A8-46F4-8B74-C0D14E51B228.png,studio-marquise-rings-01.jpg,studio,rings-marquise-red,"three 18ct gold rings, marquise-cut red natural gemstones in natural diamond halos",1402,1122,198944
-png,F02D9A00-49EB-4826-912F-AB540FE4155D.png,earring-flower-01.jpg,earring,flower-pink,"pair of flower earrings, pink centres, natural diamond petals",1023,1537,165145
-png,F1DF6BE6-9C97-4E33-97F5-84484E4A90BE.png,necklace-lariat-01.jpg,necklace,lariat-flower,"lariat necklace with three flower elements, pink + white stones",1024,1536,139021
-web,1087.jpg,pendant-bird-01.jpg,pendant,bird-swan,"gloved hand, 18ct gold beaded-border pendant, engraved bird (swan/dove), small red gem",800,600,70865
-web,1799.jpg,ring-diamond-floral-01.jpg,ring,diamond-floral,"white metal open band ring, floral cluster of clear stones",1440,1080,165031
-web,2076.jpg,pendant-rabbit-01.jpg,pendant,rabbit-pearl,"gloved hand, 18ct gold rabbit pendant with natural sea pearl",1440,1080,199996
-web,2211.jpg,ring-leaf-01.jpg,ring,green-leaf,"18ct gold ring, large round green gem in leaf mount",1600,1200,183369
-web,2250.jpg,ring-colour-band-01.jpg,ring,coloured-band,polished 18ct gold band with small blue + red gemstones,1440,1080,130713
-web,738.jpg,pendant-rose-01.jpg,pendant,rose-engraved,oval 18ct gold pendant engraved with rose and leaves,800,600,80711
-other,2426f09508ed5c952cf7db54c96285.jpg,display-pearl-rings-01.jpg,display,pearl-rings,four natural sea pearl rings (white + dark) in tiered cream display case,1600,1200,328250
-other,86d1c99e64869170bde2fcb300628f.jpg,display-pearl-rings-02.jpg,display,pearl-rings,"two wooden ring displays with natural sea pearl rings, retail setup",1600,1200,267059
-png,8CF9909A-A0BC-46C2-80D0-AD0695C5CAB5.png,brooch-ballet-bee-01.jpg,brooch,ballet-bee,two 18ct gold natural diamond brooches photographed together: ballet girl + Australian pearl bee,1402,1122,159236
-png,4467CDE9-D6DF-49AB-9B33-5CCF7A6A1654.png,studio-workbench-pink-01.jpg,studio,workbench-pink,"jeweller's workbench still-life, ring with pink gem in setting",1086,1449,325143
+png,27F638EF-0E9E-47F8-9764-79ACCC488C3D.png,ring-flower.jpg,ring,flower-pink,"close-up flower ring, pink centre, diamond petals, worn on finger",1086,1448,199795
+png,2D7E3BDF-7CB3-4612-A874-73675DFD9BFA.png,pendant-pearl-leaf.jpg,pendant,pearl-leaf,"pendant, large white sea pearl in leaf and diamond design",1086,1448,188316
+png,3ED062ED-006E-4963-BD85-8ED4870129F1.png,necklace-floral.jpg,necklace,floral-ruby,"necklace, floral/starburst pendant, red and white stones",1086,1448,136604
+png,47AFEA8C-EA6F-4072-8426-4E91497AFA0A.png,jade-leaf.jpg,jade,leaf,leaf pendant in milky white stone with green inclusions (jade),1178,1335,119591
+png,49DD083C-7E17-4DEA-B342-3C7193CCF915.png,necklace-flower-01.jpg,necklace,flower-pink,"chain, white flower pendant with pink centre",1600,1176,283687
+png,4A3AD6CF-CE77-40A4-8233-4DE229D9F195.png,jade-bean.jpg,jade,bean,"pendant carved from green/white jade, bean/gourd shape",1536,1024,54562
+png,4E858894-603E-4CC4-A0CE-8DEEC75DA5CF.png,brooch-sprig.jpg,brooch,sprig-pearl,"sprig brooch, leaves, diamonds, one white sea pearl",1086,1448,136245
+png,6ACDFC20-B6F1-480E-B729-7FAA7DC6CC80.png,pendant-lantern.jpg,pendant,lantern-ruby,lantern/cage pendant with red gemstones and diamonds,1086,1448,187859
+png,7061C721-5FD8-4C69-A650-F62D247A4B3B.png,necklace-v-ruby.jpg,necklace,v-ruby,"necklace, V-shaped pendant with red gemstones and diamonds",986,1315,88704
+png,7C8B53D9-04C0-44B0-B049-39C1F4592B21.png,brooch-pearl-leaf.jpg,brooch,pearl-leaf,"brooch, large white sea pearl with leaves and diamonds",1086,1448,194783
+png,9E8D8B8B-5E97-41E8-B0AA-A266D51B6183.png,necklace-set.jpg,necklace,set-three,"three necklaces with different pendants: red cluster, square ruby, red leaf",1086,1448,327279
+png,A89AC3D1-70B1-4377-AAEF-D38AE1205615.png,necklace-leaf-heart.jpg,necklace,leaf-heart,"necklace, leaf and heart pendant with diamonds and sea pearl",1122,1402,303713
+png,AF6D266A-1F83-43D1-8C84-70E7062F7DF1.png,pendant-lattice.jpg,pendant,lattice-amethyst,"pendant, geometric lattice, central purple gem, green accents",1086,1448,208900
+png,C5E5E456-1FD7-4149-BFD5-160D479E8DE5.png,pendant-seahorse.jpg,pendant,seahorse,seahorse pendant encrusted with small diamonds,1402,1122,169881
+png,D10BC367-F909-4FEB-B61C-BCF59B967154.png,necklace-pearl-drop.jpg,necklace,leaf-pearl-drop,"necklace, leaf pendant with large white sea pearl drop",1086,1448,273102
+png,D2EE0528-2A00-4719-9922-12D7F757FB95.png,jade-set.jpg,jade,set-four,"collection of four jade/stone pendants: green, white, blue-green",1536,1024,155559
+png,E4887758-95A8-46F4-8B74-C0D14E51B228.png,studio-marquise-rings.jpg,studio,rings-marquise-red,"three rings, marquise-cut red gemstones in diamond halos",1402,1122,198944
+png,F02D9A00-49EB-4826-912F-AB540FE4155D.png,earring-flower.jpg,earring,flower-pink,"pair of flower earrings, pink centres, diamond petals",1023,1537,165145
+png,F1DF6BE6-9C97-4E33-97F5-84484E4A90BE.png,necklace-lariat.jpg,necklace,lariat-flower,"lariat necklace with three flower elements, pink and white stones",1024,1536,139021
+web,1087.jpg,pendant-bird.jpg,pendant,bird-swan,"gloved hand, beaded-border pendant, engraved bird, small red gem",800,600,70865
+web,1799.jpg,ring-diamond-floral.jpg,ring,diamond-floral,"open band ring, floral cluster of clear stones",1440,1080,165031
+web,2076.jpg,pendant-rabbit.jpg,pendant,rabbit-pearl,"gloved hand, rabbit pendant with sea pearl",1440,1080,199996
+web,2211.jpg,ring-leaf.jpg,ring,green-leaf,"ring, large round green gem in leaf mount",1600,1200,183369
+web,2250.jpg,ring-colour-band.jpg,ring,coloured-band,polished band with small blue and red gemstones,1440,1080,130713
+web,738.jpg,pendant-rose.jpg,pendant,rose-engraved,oval pendant engraved with rose and leaves,800,600,80711
+other,2426f09508ed5c952cf7db54c96285.jpg,display-pearl-rings-01.jpg,display,pearl-rings,four sea pearl rings (white and dark) in tiered cream display case,1600,1200,328250
+other,86d1c99e64869170bde2fcb300628f.jpg,display-pearl-rings-02.jpg,display,pearl-rings,"two wooden ring displays with sea pearl rings, retail setup",1600,1200,267059
+png,8CF9909A-A0BC-46C2-80D0-AD0695C5CAB5.png,brooch-ballet-bee.jpg,brooch,ballet-bee,two diamond brooches photographed together: ballet girl and bee,1402,1122,159236
+png,4467CDE9-D6DF-49AB-9B33-5CCF7A6A1654.png,studio-workbench-pink.jpg,studio,workbench-pink,"jeweller's workbench still-life, ring with pink gem in setting",1086,1449,325143
