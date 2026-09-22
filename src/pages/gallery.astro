@@ -5,6 +5,27 @@ import { groupByCategory } from '@/lib/gallery';
 
 const groups = groupByCategory(assets);
 
+// Interleave: alternate between the two most extreme aspect-ratio halves
+// so wide/tall images break up the rhythm and create a visual zig-zag.
+function interleave(items: typeof assets) {
+  if (items.length < 4) return items;
+  const withRatio = items
+    .map((it) => ({ it, r: it.width && it.height ? it.width / it.height : 1.5 }))
+    .sort((a, b) => a.r - b.r);
+  const n = withRatio.length;
+  const half = Math.floor(n / 2);
+  const left = withRatio.slice(0, half);
+  const right = withRatio.slice(half);
+  const out: typeof items = [];
+  const max = Math.max(left.length, right.length);
+  for (let i = 0; i < max; i++) {
+    // zig-zag: take from left, right, left, right…
+    if (i < left.length) out.push(left[i].it);
+    if (i < right.length) out.push(right[i].it);
+  }
+  return out;
+}
+
 const filterBtn =
   'border border-line px-3.5 py-1.5 text-xs uppercase tracking-[0.14em] text-muted transition-colors hover:border-ink hover:text-ink';
 export const prerender = true;
@@ -42,43 +63,46 @@ export const prerender = true;
         ))}
       </div>
 
-      {groups.map((g) => (
-        <section data-gallery-section={g.category} class="mb-14 last:mb-0">
-          <h2 class="text-[26px] mb-6 flex items-baseline gap-3">
-            {g.category} <span class="text-base text-muted align-super">{g.items.length}</span>
-          </h2>
-          <div class="columns-2 md:columns-3 xl:columns-4 gap-3 [column-gap:12px]">
-            {g.items.map((item) => (
-                <figure class="m-0 mb-3 break-inside-avoid border border-line bg-bg overflow-hidden">
-                  {item.width && item.height ? (
-                    <img
-                      src={item.src}
-                      width={item.width}
-                      height={item.height}
-                      loading="lazy"
-                      decoding="async"
-                      alt={item.description}
-                      class="w-full h-auto block"
-                    />
-                  ) : (
-                    <div class="aspect-[3/2] overflow-hidden">
+      {groups.map((g) => {
+        const items = interleave(g.items);
+        return (
+          <section data-gallery-section={g.category} class="mb-14 last:mb-0">
+            <h2 class="text-[26px] mb-6 flex items-baseline gap-3">
+              {g.category} <span class="text-base text-muted align-super">{g.items.length}</span>
+            </h2>
+            <div class="columns-2 md:columns-3 xl:columns-4 gap-4 [column-gap:16px]">
+              {items.map((item) => (
+                  <figure class="m-0 mb-4 break-inside-avoid border border-line bg-bg overflow-hidden">
+                    {item.width && item.height ? (
                       <img
                         src={item.src}
+                        width={item.width}
+                        height={item.height}
                         loading="lazy"
                         decoding="async"
                         alt={item.description}
-                        class="w-full h-full object-cover"
+                        class="w-full h-auto block"
                       />
-                    </div>
-                  )}
-                  <figcaption class="px-3 py-2.5 text-xs text-muted border-t border-line leading-snug">
-                    {item.description}
-                  </figcaption>
-                </figure>
-            ))}
-          </div>
-        </section>
-      ))}
+                    ) : (
+                      <div class="aspect-[3/2] overflow-hidden">
+                        <img
+                          src={item.src}
+                          loading="lazy"
+                          decoding="async"
+                          alt={item.description}
+                          class="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <figcaption class="px-3 py-2.5 text-xs text-muted border-t border-line leading-snug">
+                      {item.description}
+                    </figcaption>
+                  </figure>
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   </section>
 </Base>
