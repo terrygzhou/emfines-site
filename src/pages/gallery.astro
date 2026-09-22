@@ -27,8 +27,7 @@ export const prerender = true;
 
   <section class="pb-16">
     <div class="mx-auto max-w-[1240px] px-6">
-      <!-- Category filter (EMF-6 FR-3: client-side, no reload; server-rendered content stays visible without JS) -->
-      <div class="flex flex-wrap gap-2 mb-8" role="group" aria-label="Filter gallery by category">
+      <div class="flex flex-wrap gap-2 mb-10" role="group" aria-label="Filter gallery by category">
         <button
           type="button"
           data-gallery-filter="all"
@@ -44,39 +43,40 @@ export const prerender = true;
       </div>
 
       {groups.map((g) => (
-        <section data-gallery-section={g.category} class="mb-12 last:mb-0">
-          <h2 class="text-[26px] mb-5">
+        <section data-gallery-section={g.category} class="mb-14 last:mb-0">
+          <h2 class="text-[26px] mb-6 flex items-baseline gap-3">
             {g.category} <span class="text-base text-muted align-super">{g.items.length}</span>
           </h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div class="columns-2 md:columns-3 xl:columns-4 gap-3 [column-gap:12px]">
             {g.items.map((item) => (
-              <figure class="m-0 border border-line bg-bg overflow-hidden">
-                {item.width && item.height ? (
-                  <img
-                    src={item.src}
-                    width={item.width}
-                    height={item.height}
-                    loading="lazy"
-                    decoding="async"
-                    alt={item.description}
-                    class="w-full h-auto block"
-                  />
-                ) : (
-                  <div class="aspect-[3/2] overflow-hidden">
+                <figure class="m-0 mb-3 break-inside-avoid border border-line bg-bg overflow-hidden">
+                  {item.width && item.height ? (
                     <img
                       src={item.src}
+                      width={item.width}
+                      height={item.height}
                       loading="lazy"
                       decoding="async"
                       alt={item.description}
-                      class="w-full h-full object-cover"
+                      class="w-full h-auto block"
                     />
-                  </div>
-                )}
-                <figcaption class="px-3 py-2.5 text-xs text-muted border-t border-line leading-snug">
-                  {item.description}
-                </figcaption>
-              </figure>
-            ))}
+                  ) : (
+                    <div class="aspect-[3/2] overflow-hidden">
+                      <img
+                        src={item.src}
+                        loading="lazy"
+                        decoding="async"
+                        alt={item.description}
+                        class="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <figcaption class="px-3 py-2.5 text-xs text-muted border-t border-line leading-snug">
+                    {item.description}
+                  </figcaption>
+                </figure>
+              );
+            })}
           </div>
         </section>
       ))}
