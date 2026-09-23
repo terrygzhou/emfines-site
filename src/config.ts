@@ -5,9 +5,10 @@ import type { UmamiAnalytics, MatomoAnalytics } from '@/lib/analytics';
 export const SITE = {
   name: 'EM Fine Studio',
   tagline: 'EM Fine Studio — Australian design, crafted with experience and care.',
-  // OQ-1 default: email-only contact block + suburb placeholder. No phone, no socials.
-  email: 'studio@emfines.com.au',
-  suburb: 'Box Hill South, VIC',
+  email: 'info@emfinestudio.com',
+  phone: '1300 317 906',
+  web: 'www.emfinestudio.com',
+  address: 'Suite 1006, 250 Pitt Street, Sydney NSW 2000',
   // OQ-2 default: no social links.
   social: null as null | string,
 } as const;

@@ -21,8 +21,9 @@ import { SITE } from '@/config';
     <div>
       <h4 class="text-xs tracking-[0.14em] uppercase opacity-70 mb-3">Contact</h4>
       <ul class="flex flex-col gap-2 opacity-85">
+        <li><a class="hover:opacity-100" href={`tel:${SITE.phone.replace(/\s/g, '')}`}>{SITE.phone}</a></li>
         <li><a class="hover:opacity-100" href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
-        <li>{SITE.suburb}</li>
+        <li>{SITE.address}</li>
       </ul>
     </div>
   </div>
